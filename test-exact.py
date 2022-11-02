@@ -3,10 +3,11 @@ from nltk.corpus import stopwords
 import json
 import string
 from tqdm import tqdm
+from nltk.stem.porter import *
 
 # nltk.download('stopwords')
 stopwords_en = stopwords.words('english')
-
+stemmer = PorterStemmer()
 
 with open('./spider_data/tables.json') as f:
   tables_data = json.load(f)
@@ -21,9 +22,11 @@ for db in tqdm(tables_data):
 
     for column in db['column_names']:
       if column[0] == idx:
-        columns.update(column[1].lower().split(' '))
+        _cols = column[1].lower().split(' ')
+        _cols = [stemmer.stem(col) for col in _cols]
+        columns.update(_cols)
     
-    columns.add(db['table_names'][idx].lower())
+    columns.add(stemmer.stem(db['table_names'][idx].lower()))
 
     tables.append((columns, label))
 
@@ -33,18 +36,19 @@ with open('./spider_data/dev_new.json', 'r') as f:
   dev_data = json.load(f)
 
 qs = []
-qs_words = []
+
+k = 1
 
 for q in tqdm(dev_data):
+  if len(q['table_name']) > 1:
+    continue
+
   keywords = q['question_toks']
   keywords = [word.lower() for word in keywords]
-  keywords = [word for word in keywords if word not in stopwords_en and word not in string.punctuation]
+  keywords = [stemmer.stem(word) for word in keywords if word not in stopwords_en and word not in string.punctuation]
   # print(q_removed)
   keywords = set(keywords)
 
-  cands_hit = []
-  cands_name = []
-  words = []
   cands = []
 
   for table in tables:
@@ -54,19 +58,13 @@ for q in tqdm(dev_data):
         hit += 1
     
     if hit >= 1:
-      cands_hit.append(hit)
-      cands_name.append(table[1])
+      cands.append((table[1], hit))
   
-  if len(cands_hit) != 0:
-    max_hit = max(cands_hit)
-
-    for idx, table_name in enumerate(cands_name):
-      if cands_hit[idx] == max_hit:
-        cands.append(table_name)
+  cands.sort(key = lambda x: x[1], reverse=True)
 
   # print(q)
-  q_label = f"{q['db_id']}-{q['table_name'].lower()}"
-  qs.append((cands, q_label))
+  q_label = f"{q['db_id']}-{q['table_name'][0].lower()}"
+  qs.append((cands[:k], q_label))
   # qs_words.append(words)
 
 precision = 0
@@ -76,15 +74,20 @@ for result in qs:
   cands = result[0]
   label = result[1]
 
-  if label in cands:
+  cands_label = [x[0] for x in cands]
+
+  # print(cands_label)
+  # print(l)
+
+  if label in cands_label:
     recall += 1
 
     precision += (1/len(cands))
 
 precision = precision/len(qs)
 recall = recall/len(qs)
-print(f'overall precision is {precision}')
-print(f'overall recall is {recall}')
+print(f'overall precision@{k} is {precision}')
+print(f'overall recall@{k} is {recall}')
 print(f'overall f-1 is {2*(precision * recall)/ (precision + recall)}')
 
 # print(qs[:2])
