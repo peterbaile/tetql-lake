@@ -1,3 +1,4 @@
 spider_data/database
 env/
 content/
+.DS_Store
