@@ -128,7 +128,7 @@ if __name__ == '__main__':
         if total_output is None:
           total_output = output.cpu()
         else:
-          total_output = torch.vstack((total_output, output.cpu()))
+          total_output = torch.cat((total_output, output.cpu()), 0)
 
         acc = (output == test_label).sum().item()
 
