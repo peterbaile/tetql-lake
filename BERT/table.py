@@ -10,7 +10,7 @@ from torch import nn
 from torch.optim import Adam
 from tqdm import tqdm
 import pandas as pd
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 import numpy as np
 import random
 import argparse
@@ -133,6 +133,8 @@ if __name__ == '__main__':
 
         acc = (output == test_label).sum().item()
 
-    print(f1_score(total_output, test_Y, average='macro'))
-    print(f1_score(total_output, test_Y, average='micro'))
-    print(f1_score(total_output, test_Y, average='weighted'))
+    print(precision_score(total_output, test_Y))
+    print(recall_score(total_output, test_Y))
+    print(f1_score(total_output, test_Y))
+    # print(f1_score(total_output, test_Y, average='micro'))
+    # print(f1_score(total_output, test_Y, average='weighted'))
