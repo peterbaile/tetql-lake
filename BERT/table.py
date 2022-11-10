@@ -115,6 +115,7 @@ if __name__ == '__main__':
     test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
 
     total_output = None
+    total_acc_test = 0
 
     with torch.no_grad():
       for test_input, test_label in tqdm(test_dataloader):
@@ -131,7 +132,9 @@ if __name__ == '__main__':
           total_output = torch.cat((total_output, output.cpu()), 0)
 
         acc = (output == test_label).sum().item()
+        total_acc_test += acc
 
+    print(total_acc_test)
     print(precision_score(total_output, test_Y))
     print(recall_score(total_output, test_Y))
     print(f1_score(total_output, test_Y))
