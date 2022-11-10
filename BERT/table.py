@@ -34,6 +34,10 @@ train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle 
 train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
 test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
+model = BertModel.from_pretrained('bert-base-uncased')
+
+print('finished downloading')
+
 class LogDataset(data.Dataset):
   def __init__(self, features, labels):
     self.features = tokenize(features)
