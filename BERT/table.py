@@ -22,7 +22,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
 def tokenize(texts):
-  return [tokenizer(text, padding='max_length', return_tensors='pt') for text in texts]
+  return [tokenizer(text.lower(), padding='max_length', return_tensors='pt') for text in texts]
 
 # tokenized = tokenize(['How many singers do we have? [SEP] [TBL] perpetrator [COL] perpetrator id [COL] people id [COL] date [COL] year [COL] location [COL] country [COL] killed [COL] injured'])
 # print(tokenized[0].input_ids)
@@ -34,9 +34,7 @@ train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle 
 train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
 test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
-model = BertModel.from_pretrained('bert-base-uncased')
-
-print('finished downloading')
+# model = BertModel.from_pretrained('bert-base-uncased')
 
 class LogDataset(data.Dataset):
   def __init__(self, features, labels):
@@ -81,9 +79,10 @@ if __name__ == '__main__':
   print(args.mode)
 
   if args.mode == 'train':
+    model = BertClassifier().to(device)
+    print('finished downloading')
     dataset = LogDataset(train_X, train_Y)
     dataloader = data.DataLoader(dataset, batch_size = 10, shuffle = True)
-    model = BertClassifier().to(device)
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = Adam(model.parameters(), lr=1e-5)
 
