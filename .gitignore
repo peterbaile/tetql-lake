@@ -4,3 +4,4 @@ content/
 .DS_Store
 .vscode
 actual-test.py
+bert.pt

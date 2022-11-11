@@ -22,7 +22,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
 def tokenize(texts):
-  return [tokenizer(text.lower(), padding='max_length', return_tensors='pt') for text in tqdm(texts)]
+  return [tokenizer(text, padding='max_length', return_tensors='pt') for text in tqdm(texts)]
 
 # tokenized = tokenize(['How many singers do we have? [SEP] [TBL] perpetrator [COL] perpetrator id [COL] people id [COL] date [COL] year [COL] location [COL] country [COL] killed [COL] injured'])
 # print(tokenized[0].input_ids)
