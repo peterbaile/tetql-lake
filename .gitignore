@@ -5,3 +5,4 @@ content/
 .vscode
 actual-test.py
 bert.pt
+*.pt
