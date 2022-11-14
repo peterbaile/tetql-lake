@@ -19,7 +19,7 @@ random.seed(0)
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
+# tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
 def tokenize(texts):
   return [tokenizer(text, padding='max_length', return_tensors='pt') for text in tqdm(texts)]
@@ -29,13 +29,13 @@ def tokenize(texts):
 # print(tokenize(['[COL]'])[0].input_ids)
 # print(tokenizer.convert_ids_to_tokens(tokenized[0].input_ids[0]))
 
-# df = pd.read_csv('./data.csv')
-# train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle = True)
-# train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
-# test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
-
-test = pd.read_csv('./data_join_only.csv')
+df = pd.read_csv('./data_join_no_special.csv')
+train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle = True)
+train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
 test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
+
+# test = pd.read_csv('./data_join_only_1.csv')
+# test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
 # model = BertModel.from_pretrained('bert-base-uncased')
 
@@ -58,15 +58,13 @@ class BertClassifier(nn.Module):
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
     self.linear = nn.Linear(768, 2)
-    self.relu = nn.ReLU()
 
   def forward(self, input_id, mask):
     _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=False)
     dropout_output = self.dropout(pooled_output)
     linear_output = self.linear(dropout_output)
-    final_layer = self.relu(linear_output)
 
-    return final_layer
+    return linear_output
 
 device = 'cuda'
 
@@ -82,7 +80,7 @@ if __name__ == '__main__':
   print(args.mode)
 
   if args.mode == 'train':
-    train_batch_size = 50
+    train_batch_size = 100
     model = BertClassifier().to(device)
     print('finished downloading')
     dataset = LogDataset(train_X, train_Y)
@@ -113,12 +111,13 @@ if __name__ == '__main__':
 
     torch.save(model, './bert.pt')
   elif args.mode == 'test':
-    model = torch.load('./bert.pt')
+    model = torch.load('./bert-no-lower.pt')
     test_dataset = LogDataset(test_X, test_Y)
-    test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
+    test_dataloader = data.DataLoader(test_dataset, batch_size = 2)
 
     total_output = None
     total_acc_test = 0
+    total_output_prob = None
 
     with torch.no_grad():
       for test_input, test_label in tqdm(test_dataloader):
@@ -126,13 +125,15 @@ if __name__ == '__main__':
         mask = test_input['attention_mask'].to(device)
         input_id = test_input['input_ids'].squeeze(1).to(device)
 
-        output = model(input_id, mask)
-        output = output.argmax(dim=1)
+        raw_output = model(input_id, mask)
+        output = raw_output.argmax(dim=1)
 
         if total_output is None:
           total_output = output.cpu()
+          total_output_prob = (raw_output.max()).cpu()
         else:
           total_output = torch.cat((total_output, output.cpu()), 0)
+          total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
 
         acc = (output == test_label).sum().item()
         total_acc_test += acc
@@ -143,3 +144,10 @@ if __name__ == '__main__':
     print(f'f1: {f1_score(test_Y, total_output)}')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
+
+    
+    # total_output_prob = total_output_prob.squeeze(1)
+    # print(total_output_prob)
+
+    # pd.set_option('display.max_colwidth', None)
+    # print(test_X[torch.argsort(total_output_prob, descending=True)[:3].tolist()])
