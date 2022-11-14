@@ -135,8 +135,8 @@ if __name__ == '__main__':
         total_acc_test += acc
 
     print(total_acc_test)
-    print(f'precision: {precision_score(total_output, test_Y)}')
-    print(f'recall: {recall_score(total_output, test_Y)}')
-    print(f'f1: {f1_score(total_output, test_Y)}')
+    print(f'precision: {precision_score(test_Y, total_output)}')
+    print(f'recall: {recall_score(test_Y, total_output)}')
+    print(f'f1: {f1_score(test_Y, total_output)}')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
