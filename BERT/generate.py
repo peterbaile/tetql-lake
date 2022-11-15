@@ -5,8 +5,8 @@ import pandas as pd
 def _key(db, table_idx):
   return f'{db}#sep#{table_idx}'
 
-with open('../spider_data/dev_new_new.json', 'r') as f:
-  dev_data = json.load(f)
+with open('../spider_data/train_others_new.json', 'r') as f:
+  q_data = json.load(f)
 
 with open('../spider_data/tables.json') as f:
   db_data = json.load(f)
@@ -29,36 +29,56 @@ for db in db_data:
 all_data = []
 
 max_len = 0
+count = 0
 
-for q in tqdm(dev_data):
+special_tokens = False
+
+for q in tqdm(q_data):
   question = q['question']
   db_id = q['db_id']
   table_labels = q['table_labels']
 
-  if len(table_labels) >= 2:
-    continue
+  # if len(table_labels) <= 1:
+  #   continue
   
-  table_idx = table_labels[0]
-  correct_key = _key(db_id, table_idx)
+  count += 1
+
+  # table_idx = table_labels[0]
+  # correct_key = _key(db_id, table_idx)
+
+  # include all tables in the label
+  correct_keys = [_key(db_id, ii) for ii in table_labels]
   
   for key in dbs:
-    cols = ' [COL] '.join(dbs[key])
+    if special_tokens:
+      cols = ' [COL] '.join(dbs[key])
+    else:
+      cols = ' '.join(dbs[key])
+
     _db_id, idx = key.split('#sep#')
     # print(key)
     # print(idx)
     # print(type(int(idx)))
     _table_name = dbs_table_names[_db_id][int(idx)]
-    text = f'{question} [SEP] [TBL] {_table_name} [COL] {cols}'
+    if special_tokens:
+      text = f'{question} [SEP] [TBL] {_table_name} [COL] {cols}'
+    else:
+      text = f'{question} [SEP] {_table_name} {cols}'
 
     if len(text) > max_len:
       max_len = len(text)
 
-    if key == correct_key:
+    # if key == correct_key:
+    if key in correct_keys:  
       all_data.append([text, 1])
     else:
       all_data.append([text, 0])
 
-print(max_len)
+# print(len(dev_data))
+# print(count)
+# print(f'total number of table {len(dbs)}')
+# print(max_len)
+print(len(all_data))
 # print(all_data[0])
-# df = pd.DataFrame(all_data, columns=['text', 'label'])
-# df.to_csv('./data.csv', index=False)
+df = pd.DataFrame(all_data, columns=['text', 'label'])
+df.to_csv('./data/train_others/all.csv', index=False)
