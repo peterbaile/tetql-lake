@@ -111,9 +111,9 @@ if __name__ == '__main__':
 
     torch.save(model, './bert.pt')
   elif args.mode == 'test':
-    model = torch.load('./bert-no-lower.pt')
+    model = torch.load('./bert.pt')
     test_dataset = LogDataset(test_X, test_Y)
-    test_dataloader = data.DataLoader(test_dataset, batch_size = 2)
+    test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
 
     total_output = None
     total_acc_test = 0
@@ -130,10 +130,10 @@ if __name__ == '__main__':
 
         if total_output is None:
           total_output = output.cpu()
-          total_output_prob = (raw_output.max()).cpu()
+          # total_output_prob = (raw_output.max()).cpu()
         else:
           total_output = torch.cat((total_output, output.cpu()), 0)
-          total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
+          # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
 
         acc = (output == test_label).sum().item()
         total_acc_test += acc
