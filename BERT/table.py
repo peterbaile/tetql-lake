@@ -79,7 +79,7 @@ if __name__ == '__main__':
   print(args.mode)
 
   if args.mode == 'train':
-    train_batch_size = 50
+    train_batch_size = 40
     model = BertClassifier().to(device)
     print('finished downloading')
     dataset = LogDataset(train_X, train_Y)
