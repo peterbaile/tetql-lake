@@ -33,7 +33,7 @@ count = 0
 
 special_tokens = False
 
-for q in tqdm(q_data):
+for q in tqdm(q_data[:int(0.62 * len(q_data))]):
   question = q['question']
   db_id = q['db_id']
   table_labels = q['table_labels']
