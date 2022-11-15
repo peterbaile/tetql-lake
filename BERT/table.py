@@ -29,12 +29,12 @@ def tokenize(texts):
 # print(tokenize(['[COL]'])[0].input_ids)
 # print(tokenizer.convert_ids_to_tokens(tokenized[0].input_ids[0]))
 
-df = pd.read_csv('./data/train_spider/all.csv')
-# train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle = True)
-# train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
-# test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
+df = pd.read_csv('./data/train_spider/all_v2.csv')
+train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle = True)
+train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
+test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
-test_X, test_Y = df.iloc[:, 0], df.iloc[:, 1]
+# test_X, test_Y = df.iloc[:, 0], df.iloc[:, 1]
 
 # model = BertModel.from_pretrained('bert-base-uncased')
 
