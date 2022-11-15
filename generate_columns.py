@@ -30,7 +30,7 @@ def find_values(id, json_repr):
   json.loads(json_repr, object_hook=_decode_dict) # Return value ignored.
   return results
 
-with open('./spider_data/dev.json', 'r') as f:
+with open('./spider_data/train_spider.json', 'r') as f:
   dev_data = json.load(f)
   # dev_data = json.loads(f.read(), object_hook=lambda _dict : _dict['sql'])
   # dev_data = find_values('table_units', f.read())
@@ -160,7 +160,7 @@ for idx, q in enumerate(dev_data):
 
   dev_data_new.append(q)
 
-with open('./spider_data/dev_new_new.json', 'w') as f:
-  json.dump(dev_data_new, f, indent=4)
+# with open('./spider_data/train_others_new.json', 'w') as f:
+#   json.dump(dev_data_new, f, indent=4)
 
 print(f'{len(dev_data_new)} / {len(dev_data)} queries')
