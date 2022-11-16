@@ -5,7 +5,7 @@ import pandas as pd
 def _key(db, table_idx):
   return f'{db}#sep#{table_idx}'
 
-with open('../spider_data/train_others_new.json', 'r') as f:
+with open('../spider_data/train_spider_new.json', 'r') as f:
   q_data = json.load(f)
 
 with open('../spider_data/tables.json') as f:
@@ -33,7 +33,7 @@ count = 0
 
 special_tokens = False
 
-for q in tqdm(q_data[:int(0.62 * len(q_data))]):
+for q in tqdm(q_data[:int(0.05 * len(q_data))]):
   question = q['question']
   db_id = q['db_id']
   table_labels = q['table_labels']
@@ -81,4 +81,4 @@ for q in tqdm(q_data[:int(0.62 * len(q_data))]):
 print(len(all_data))
 # print(all_data[0])
 df = pd.DataFrame(all_data, columns=['text', 'label'])
-df.to_csv('./data/train_others/all.csv', index=False)
+df.to_csv('./data/train_spider/all.csv', index=False)

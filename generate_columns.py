@@ -160,7 +160,7 @@ for idx, q in enumerate(dev_data):
 
   dev_data_new.append(q)
 
-# with open('./spider_data/train_others_new.json', 'w') as f:
-#   json.dump(dev_data_new, f, indent=4)
+with open('./spider_data/train_spider_new.json', 'w') as f:
+  json.dump(dev_data_new, f, indent=4)
 
 print(f'{len(dev_data_new)} / {len(dev_data)} queries')
