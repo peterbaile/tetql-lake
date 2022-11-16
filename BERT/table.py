@@ -35,7 +35,7 @@ def tokenize(texts):
 # test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
 df = pd.read_csv('./data/dev/data.csv')
-_, test = train_test_split(df, test_size = 0.6, random_state = 123, shuffle = True) # TODO: change test size = 0.3
+_, test = train_test_split(df, test_size = 1, random_state = 123, shuffle = True) # TODO: change test size = 0.3
 test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
 # model = BertModel.from_pretrained('bert-base-uncased')
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     torch.save(model, './bert_no_join_v3_diff_7.pt')
   elif args.mode == 'test':
-    model = torch.load('./bert_no_join_v3_diff_7.pt')
+    model = torch.load('./bert.pt')
     test_dataset = LogDataset(test_X, test_Y)
     test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
 
