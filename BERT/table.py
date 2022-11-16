@@ -35,8 +35,8 @@ def tokenize(texts):
 # test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
 
 df = pd.read_csv('./data/dev/data.csv')
-_, test = train_test_split(df, test_size = 1, random_state = 123, shuffle = True) # TODO: change test size = 0.3
-test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
+# _, test = train_test_split(df, test_size = 1, random_state = 123, shuffle = True) # TODO: change test size = 0.3
+test_X, test_Y = df.iloc[:, 0], df.iloc[:, 1]
 
 # model = BertModel.from_pretrained('bert-base-uncased')
 
