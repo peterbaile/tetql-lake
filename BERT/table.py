@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     torch.save(model, './bert_no_join_v3_diff_7.pt')
   elif args.mode == 'test':
-    model = torch.load('./bert.pt')
+    model = torch.load('./bert_no_join_v3_diff_7.pt')
     test_dataset = LogDataset(test_X, test_Y)
     test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
 
