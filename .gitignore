@@ -6,3 +6,4 @@ content/
 actual-test.py
 bert.pt
 *.pt
+bert/data

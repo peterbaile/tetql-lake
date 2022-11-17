@@ -17,9 +17,11 @@ import argparse
 
 random.seed(0)
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
 # tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
+
+BERT_MODEL_TYPE = 'bert-base-uncased'
+
+tokenizer = BertTokenizer.from_pretrained(BERT_MODEL_TYPE)
 
 def tokenize(texts):
   return [tokenizer(text, padding='max_length', return_tensors='pt') for text in tqdm(texts)]
@@ -28,17 +30,6 @@ def tokenize(texts):
 # print(tokenized[0].input_ids)
 # print(tokenize(['[COL]'])[0].input_ids)
 # print(tokenizer.convert_ids_to_tokens(tokenized[0].input_ids[0]))
-
-# df = pd.read_csv('./data/train_spider/no_join_v3_diff_7.csv')
-# train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle = True) # TODO: change test size = 0.3
-# train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
-# test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
-
-df = pd.read_csv('./data/dev/data.csv')
-# _, test = train_test_split(df, test_size = 1, random_state = 123, shuffle = True) # TODO: change test size = 0.3
-test_X, test_Y = df.iloc[:, 0], df.iloc[:, 1]
-
-# model = BertModel.from_pretrained('bert-base-uncased')
 
 class LogDataset(data.Dataset):
   def __init__(self, features, labels):
@@ -55,7 +46,7 @@ class BertClassifier(nn.Module):
   def __init__(self, dropout=0.5):
     super(BertClassifier, self).__init__()
 
-    self.bert = BertModel.from_pretrained('bert-base-uncased')
+    self.bert = BertModel.from_pretrained(BERT_MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
     self.linear = nn.Linear(768, 2)
@@ -69,18 +60,26 @@ class BertClassifier(nn.Module):
 
 device = 'cuda'
 
-max_epochs = 5
+max_epochs = 50
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
 
   parser.add_argument('mode', type=str)
+  parser.add_argument('file', type=str)
 
   args = parser.parse_args()
 
   print(args.mode)
+  print(f'source file: {args.file}')  
+
+  df = pd.read_csv(f'./data/{args.file}')
 
   if args.mode == 'train':
+    train, test = train_test_split(df, test_size = 0.3, random_state = 123, shuffle = True)
+    train_X, train_Y = train.iloc[:, 0], train.iloc[:, 1]
+    test_X, test_Y = test.iloc[:, 0], test.iloc[:, 1]
+
     train_batch_size = 40
     model = BertClassifier().to(device)
     print('finished downloading')
@@ -108,11 +107,17 @@ if __name__ == '__main__':
         loss.backward()
         optimizer.step()
       
+      with torch.no_grad():
+        valid
+      
       print(f'\nTrain accuracy: {total_acc_train} / {train_X.shape[0]}')
 
     torch.save(model, './bert_no_join_v3_diff_7.pt')
-  elif args.mode == 'test':
+
+  elif args.mode == 'dev':
     model = torch.load('./bert.pt')
+
+    test_X, test_Y = df.iloc[:, 0], df.iloc[:, 1]
     test_dataset = LogDataset(test_X, test_Y)
     test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
 

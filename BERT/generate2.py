@@ -53,8 +53,8 @@ for q in tqdm(q_data):
   db_id = q['db_id']
   table_labels = q['table_labels']
 
-  # if len(table_labels) <= 1:
-  #   continue
+  if len(table_labels) >= 2:
+    continue
   
   count += 1
 
@@ -75,8 +75,6 @@ for q in tqdm(q_data):
   if len(tables_from_same_db) < NUM_TABLES_PER_Q:
     more_tables = random.choices(tables_not_from_same_db, k = NUM_TABLES_PER_Q - len(tables_from_same_db))
     train_tables += more_tables
-  # else:
-    # print('!!!!')
   
   for table in train_tables:
     if special_tokens:
@@ -97,10 +95,10 @@ for q in tqdm(q_data):
       all_data.append([text, 0])
 
 print(f'number of queries {len(q_data)}')
-# print(count)
+print(f'actual number of queries processed {count}')
 print(f'number of table {len(dbs)}')
 # print(max_len)
 print(f'number of data generated {len(all_data)}')
 # print(all_data[0])
 df = pd.DataFrame(all_data, columns=['text', 'label'])
-df.to_csv('./data/train_spider/all_v2.csv', index=False)
+df.to_csv('./data/train_spider/no_join.csv', index=False)
