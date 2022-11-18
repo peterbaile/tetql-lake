@@ -74,7 +74,9 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   print(args.mode)
-  print(f'source path: {args.path}')  
+  print(f'source path: {args.path}')
+  learning_rate = 1e-7
+  print(f'learning rate: {learning_rate}')
 
   if args.mode == 'train':
     train_df = pd.read_csv(f'./data/{args.path}/train.csv')
@@ -93,7 +95,7 @@ if __name__ == '__main__':
     valid_dataloader = data.DataLoader(valid_dataset, batch_size = valid_batch_size, shuffle = True)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = Adam(model.parameters(), lr=1e-6)
+    optimizer = Adam(model.parameters(), lr=learning_rate)
 
     train_losses = []
     valid_losses = []
