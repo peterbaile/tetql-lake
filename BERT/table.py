@@ -19,11 +19,11 @@ random.seed(0)
 
 # tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
-BERT_MODEL_TYPE = 'bert-medium'
+BERT_MODEL_TYPE = 'bert-base-uncased'
 
-# tokenizer = BertTokenizer.from_pretrained(BERT_MODEL_TYPE)
+tokenizer = BertTokenizer.from_pretrained(BERT_MODEL_TYPE)
 
-tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_TYPE)
+# tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_TYPE)
 
 def tokenize(texts):
   return [tokenizer(text, padding='max_length', max_length=300, return_tensors='pt') for text in tqdm(texts)]
@@ -48,8 +48,8 @@ class BertClassifier(nn.Module):
   def __init__(self, dropout=0.5):
     super(BertClassifier, self).__init__()
 
-    # self.bert = BertModel.from_pretrained(BERT_MODEL_TYPE)
-    self.bert = AutoModel.from_pretrained(BERT_MODEL_TYPE)
+    self.bert = BertModel.from_pretrained(BERT_MODEL_TYPE)
+    # self.bert = AutoModel.from_pretrained(BERT_MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
     self.linear = nn.Linear(512, 2)
@@ -77,6 +77,7 @@ if __name__ == '__main__':
   print(f'source path: {args.path}')
   learning_rate = 1e-7
   print(f'learning rate: {learning_rate}')
+  print(BERT_MODEL_TYPE)
 
   if args.mode == 'train':
     train_df = pd.read_csv(f'./data/{args.path}/train.csv')
@@ -151,7 +152,7 @@ if __name__ == '__main__':
       print(f'\n epoch {epoch}: training loss {train_loss:.5f}, validation loss {valid_loss:.5f}')
 
       if best_valid_loss is None:
-        torch.save(model, f'./data/{args.path}/bert.pt')
+        torch.save(model, f'./data/{args.path}/{BERT_MODEL_TYPE}.pt')
         best_valid_loss = valid_loss
       elif valid_loss >= best_valid_loss:
         patience_cnt += 1
@@ -161,12 +162,12 @@ if __name__ == '__main__':
           print('early stopping')
           break
       else:
-        torch.save(model, f'./data/{args.path}/bert.pt')
+        torch.save(model, f'./data/{args.path}/{BERT_MODEL_TYPE}.pt')
         best_valid_loss = valid_loss
         patience_cnt = 0
 
   elif args.mode == 'dev':
-    model = torch.load(f'./data/{args.path}/bert.pt')
+    model = torch.load(f'./data/{args.path}/{BERT_MODEL_TYPE}.pt')
 
     dev_df = pd.read_csv(f'./data/dev/dev.csv')
     dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
