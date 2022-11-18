@@ -45,14 +45,14 @@ class LogDataset(data.Dataset):
     return len(self.features)
 
 class BertClassifier(nn.Module):
-  def __init__(self, dropout=0.5):
+  def __init__(self, dropout=0.1):
     super(BertClassifier, self).__init__()
 
     self.bert = BertModel.from_pretrained(BERT_MODEL_TYPE)
     # self.bert = AutoModel.from_pretrained(BERT_MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
-    self.linear = nn.Linear(512, 2)
+    self.linear = nn.Linear(768, 2)
 
   def forward(self, input_id, mask):
     _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=False)
