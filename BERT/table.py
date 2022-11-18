@@ -19,7 +19,7 @@ random.seed(0)
 
 # tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
-BERT_MODEL_TYPE = 'prajjwal1/bert-tiny'
+BERT_MODEL_TYPE = 'bert-tiny'
 
 # tokenizer = BertTokenizer.from_pretrained(BERT_MODEL_TYPE)
 
