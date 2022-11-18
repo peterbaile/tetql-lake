@@ -26,7 +26,7 @@ BERT_MODEL_TYPE = 'bert-tiny'
 tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_TYPE)
 
 def tokenize(texts):
-  return [tokenizer(text, padding='max_length', max_length=512, return_tensors='pt') for text in tqdm(texts)]
+  return [tokenizer(text, padding='max_length', max_length=300, return_tensors='pt') for text in tqdm(texts)]
 
 # tokenized = tokenize(['How many singers do we have? [SEP] [TBL] perpetrator [COL] perpetrator id [COL] people id [COL] date [COL] year [COL] location [COL] country [COL] killed [COL] injured'])
 # print(tokenized[0].input_ids)
