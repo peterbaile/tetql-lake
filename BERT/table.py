@@ -82,14 +82,15 @@ if __name__ == '__main__':
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
-    train_batch_size = 2
+    train_batch_size = 20
+    valid_batch_size = 400
     model = BertClassifier().to(device)
     print('finished downloading')
     train_dataset = LogDataset(train_X, train_Y)
     valid_dataset = LogDataset(valid_X, valid_Y)
 
     train_dataloader = data.DataLoader(train_dataset, batch_size = train_batch_size, shuffle = True)
-    valid_dataloader = data.DataLoader(valid_dataset, batch_size = train_batch_size, shuffle = True)
+    valid_dataloader = data.DataLoader(valid_dataset, batch_size = valid_batch_size, shuffle = True)
 
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = Adam(model.parameters(), lr=1e-5)
