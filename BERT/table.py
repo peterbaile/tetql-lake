@@ -93,7 +93,7 @@ if __name__ == '__main__':
     valid_dataloader = data.DataLoader(valid_dataset, batch_size = valid_batch_size, shuffle = True)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = Adam(model.parameters(), lr=1e-5)
+    optimizer = Adam(model.parameters(), lr=1e-6)
 
     train_losses = []
     valid_losses = []
@@ -164,18 +164,20 @@ if __name__ == '__main__':
         patience_cnt = 0
 
   elif args.mode == 'dev':
-    model = torch.load('./bert.pt')
+    model = torch.load(f'./data/{args.path}/bert.pt')
 
-    test_X, test_Y = df.iloc[:, 0], df.iloc[:, 1]
-    test_dataset = LogDataset(test_X, test_Y)
-    test_dataloader = data.DataLoader(test_dataset, batch_size = 500)
+    dev_df = pd.read_csv(f'./data/dev/dev.csv')
+    dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
+    dev_dataset = LogDataset(dev_X, dev_Y)
+    dev_dataloader = data.DataLoader(dev_dataset, batch_size = 500)
 
     total_output = None
     total_acc_test = 0
     total_output_prob = None
 
+    model.eval()
     with torch.no_grad():
-      for test_input, test_label in tqdm(test_dataloader):
+      for test_input, test_label in tqdm(dev_dataloader):
         test_label = test_label.to(device)
         mask = test_input['attention_mask'].to(device)
         input_id = test_input['input_ids'].squeeze(1).to(device)
@@ -194,9 +196,9 @@ if __name__ == '__main__':
         total_acc_test += acc
 
     print(total_acc_test)
-    print(f'precision: {precision_score(test_Y, total_output)}')
-    print(f'recall: {recall_score(test_Y, total_output)}')
-    print(f'f1: {f1_score(test_Y, total_output)}')
+    print(f'precision: {precision_score(dev_Y, total_output)}')
+    print(f'recall: {recall_score(dev_Y, total_output)}')
+    print(f'f1: {f1_score(dev_Y, total_output)}')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
 
