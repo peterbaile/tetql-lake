@@ -19,7 +19,7 @@ random.seed(0)
 
 # tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
-BERT_MODEL_TYPE = 'bert-small'
+BERT_MODEL_TYPE = 'bert-medium'
 
 # tokenizer = BertTokenizer.from_pretrained(BERT_MODEL_TYPE)
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
     train_batch_size = 20
-    valid_batch_size = 400
+    valid_batch_size = 100
     model = BertClassifier().to(device)
     print('finished downloading')
     train_dataset = LogDataset(train_X, train_Y)
