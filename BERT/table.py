@@ -19,7 +19,7 @@ random.seed(0)
 
 # tokenizer.add_special_tokens({'additional_special_tokens': ['[TBL]', '[COL]']})
 
-MODEL_TYPE = 'roberta-base'
+MODEL_TYPE = 'roberta-large'
 
 # tokenizer = BertTokenizer.from_pretrained(MODEL_TYPE)
 
@@ -52,7 +52,7 @@ class BertClassifier(nn.Module):
     self.bert = AutoModel.from_pretrained(MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
-    self.linear = nn.Linear(768, 2)
+    self.linear = nn.Linear(1024, 2)
 
   def forward(self, input_id, mask):
     _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=False)
