@@ -175,7 +175,7 @@ if __name__ == '__main__':
     dev_df = pd.read_csv(f'./data/dev/dev.csv')
 
     part_percent = 0.001
-    cut = int(part_percent * len(dev_df.shape[0]))
+    cut = int(part_percent * dev_df.shape[0])
     if args.devpart == 0:
       dev_df = dev_df[:cut]
     else:
