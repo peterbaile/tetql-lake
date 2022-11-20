@@ -68,13 +68,13 @@ max_epochs = 50
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
 
-  parser.add_argument('mode', type=str)
-  parser.add_argument('path', type=str)
+  parser.add_argument('--mode', type=str)
+  parser.add_argument('--path', type=str)
+  parser.add_argument('--devpart', type=int)
 
   args = parser.parse_args()
 
-  print(args.mode)
-  print(f'source path: {args.path}')
+  print(f'mode: {args.mode}, source path: {args.path}')
   learning_rate = 1e-7
   print(f'learning rate: {learning_rate}')
   print(MODEL_TYPE)
@@ -169,9 +169,18 @@ if __name__ == '__main__':
         patience_cnt = 0
 
   elif args.mode == 'dev':
+    print(f'df partition: {args.devpart}')
     model = torch.load(f'./data/{args.path}/{MODEL_TYPE}.pt')
 
     dev_df = pd.read_csv(f'./data/dev/dev.csv')
+
+    part_percent = 0.001
+    cut = int(part_percent * len(dev_df.shape[0]))
+    if args.devpart == 0:
+      dev_df = dev_df[:cut]
+    else:
+      dev_df = dev_df[cut:]
+
     dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
     dev_dataset = LogDataset(dev_X, dev_Y)
     dev_dataloader = data.DataLoader(dev_dataset, batch_size = 500)
@@ -204,6 +213,10 @@ if __name__ == '__main__':
     print(f'precision: {precision_score(dev_Y, total_output)}')
     print(f'recall: {recall_score(dev_Y, total_output)}')
     print(f'f1: {f1_score(dev_Y, total_output)}')
+
+    np.save(f'./data/dev/dev_label_{args.devpart}.np', dev_Y)
+    np.save(f'./data/dev/dev_output_{args.devpart}.np', total_output.detach().numpy())
+    print(f'output saved')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
 
