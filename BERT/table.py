@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     dev_df = pd.read_csv(f'./data/dev/dev.csv')
 
-    part_percent = 0.001
+    part_percent = 0.5
     cut = int(part_percent * dev_df.shape[0])
     if args.devpart == 0:
       dev_df = dev_df[:cut]
@@ -209,7 +209,7 @@ if __name__ == '__main__':
         acc = (output == test_label).sum().item()
         total_acc_test += acc
 
-    print(total_acc_test)
+    print(f'accuracy: {total_acc_test}/{dev_df.shape[0]}')
     print(f'precision: {precision_score(dev_Y, total_output)}')
     print(f'recall: {recall_score(dev_Y, total_output)}')
     print(f'f1: {f1_score(dev_Y, total_output)}')
