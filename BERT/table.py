@@ -70,6 +70,7 @@ if __name__ == '__main__':
 
   parser.add_argument('--mode', type=str)
   parser.add_argument('--path', type=str)
+  parser.add_argument('--devfile', type=str)
   parser.add_argument('--devpart', type=int)
 
   args = parser.parse_args()
@@ -169,10 +170,10 @@ if __name__ == '__main__':
         patience_cnt = 0
 
   elif args.mode == 'dev':
-    print(f'df partition: {args.devpart}')
+    print(f'dev partition: {args.devpart}, dev file: {args.devfile}')
     model = torch.load(f'./data/{args.path}/{MODEL_TYPE}.pt')
 
-    dev_df = pd.read_csv(f'./data/dev/dev_em.csv')
+    dev_df = pd.read_csv(f'./data/dev/{args.devfile}.csv')
 
     if args.devpart != -1:
       part_percent = 0.5
@@ -216,8 +217,8 @@ if __name__ == '__main__':
     print(f'f1: {f1_score(dev_Y, total_output)}')
 
     # np.save automatically add .npy extension
-    np.save(f'./data/dev/dev_em_label_{args.devpart}', dev_Y)
-    np.save(f'./data/dev/dev_em_output_{args.devpart}', total_output.detach().numpy())
+    np.save(f'./data/dev/{args.devfile}_label_{args.devpart}', dev_Y)
+    np.save(f'./data/dev/{args.devfile}_output_{args.devpart}', total_output.detach().numpy())
     print(f'output saved')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
