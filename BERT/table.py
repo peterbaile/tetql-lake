@@ -214,8 +214,9 @@ if __name__ == '__main__':
     print(f'recall: {recall_score(dev_Y, total_output)}')
     print(f'f1: {f1_score(dev_Y, total_output)}')
 
-    np.save(f'./data/dev/dev_label_{args.devpart}.np', dev_Y)
-    np.save(f'./data/dev/dev_output_{args.devpart}.np', total_output.detach().numpy())
+    # np.save automatically add .npy extension
+    np.save(f'./data/dev/dev_label_{args.devpart}', dev_Y)
+    np.save(f'./data/dev/dev_output_{args.devpart}', total_output.detach().numpy())
     print(f'output saved')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
