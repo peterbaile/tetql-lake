@@ -3,7 +3,7 @@
 # regression with dropout + linear layer with 1 output
 
 from sklearn.model_selection import train_test_split
-from transformers import BertTokenizer, BertModel, AutoModel, AutoTokenizer
+from transformers import BertTokenizer, BertModel, AutoModel, AutoTokenizer, file_utils
 from torch.utils import data
 import torch
 from torch import nn
@@ -172,14 +172,15 @@ if __name__ == '__main__':
     print(f'df partition: {args.devpart}')
     model = torch.load(f'./data/{args.path}/{MODEL_TYPE}.pt')
 
-    dev_df = pd.read_csv(f'./data/dev/dev.csv')
+    dev_df = pd.read_csv(f'./data/dev/dev_em.csv')
 
-    part_percent = 0.5
-    cut = int(part_percent * dev_df.shape[0])
-    if args.devpart == 0:
-      dev_df = dev_df[:cut]
-    else:
-      dev_df = dev_df[cut:]
+    if args.devpart != -1:
+      part_percent = 0.5
+      cut = int(part_percent * dev_df.shape[0])
+      if args.devpart == 0:
+        dev_df = dev_df[:cut]
+      else:
+        dev_df = dev_df[cut:]
 
     dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
     dev_dataset = LogDataset(dev_X, dev_Y)
@@ -215,8 +216,8 @@ if __name__ == '__main__':
     print(f'f1: {f1_score(dev_Y, total_output)}')
 
     # np.save automatically add .npy extension
-    np.save(f'./data/dev/dev_label_{args.devpart}', dev_Y)
-    np.save(f'./data/dev/dev_output_{args.devpart}', total_output.detach().numpy())
+    np.save(f'./data/dev/dev_em_label_{args.devpart}', dev_Y)
+    np.save(f'./data/dev/dev_em_output_{args.devpart}', total_output.detach().numpy())
     print(f'output saved')
     # print(f1_score(total_output, test_Y, average='micro'))
     # print(f1_score(total_output, test_Y, average='weighted'))
@@ -227,3 +228,17 @@ if __name__ == '__main__':
 
     # pd.set_option('display.max_colwidth', None)
     # print(test_X[torch.argsort(total_output_prob, descending=True)[:3].tolist()])
+  elif args.mode == 'score':
+    print(file_utils.default_cache_path)
+
+    dev_output_0 = np.load(f'./data/dev/dev_output_0.npy')
+    dev_output_1 = np.load(f'./data/dev/dev_output_1.npy')
+    dev_label_0 = np.load(f'./data/dev/dev_label_0.npy')
+    dev_label_1 = np.load(f'./data/dev/dev_label_1.npy')
+
+    output = np.hstack((dev_output_0, dev_output_1))
+    label = np.hstack((dev_label_0, dev_label_1))
+
+    print(f'precision: {precision_score(label, output):.3f}')
+    print(f'recall: {recall_score(label, output):.3f}')
+    print(f'f1: {f1_score(label, output):.3f}')
