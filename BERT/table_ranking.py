@@ -183,7 +183,7 @@ if __name__ == '__main__':
           input_id = batch_input_id.squeeze(0).to(device)
 
           output = model(input_id, mask)
-          num_instance = train_labels.shape[0]
+          num_instance = valid_labels.shape[0]
           output = output.reshape((num_instance, num_instance))
           output = m(output)
 
