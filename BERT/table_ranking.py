@@ -68,6 +68,7 @@ class LogDataset(data.Dataset):
         batch_mask = torch.vstack((batch_mask, single_mask))
         batch_input_id = torch.vstack((batch_input_id, single_input_id))
 
+    print(label)
     return batch_mask, batch_input_id, torch.tensor(label)
   
   def __len__(self):
@@ -151,9 +152,7 @@ if __name__ == '__main__':
         input_id = batch_input_id.to(device)
 
         output = model(input_id, mask)
-
         output = output.reshape((train_batch_instance_size, train_batch_instance_size))
-
         output = m(output)
 
         # acc = (output.argmax(dim=1) == train_labels).sum().item()
@@ -163,6 +162,7 @@ if __name__ == '__main__':
 
         print(output.shape)
         print(train_labels.shape)
+        print(train_labels)
 
         loss = criterion(output, train_labels.long())
         
@@ -173,12 +173,14 @@ if __name__ == '__main__':
       
       model.eval()
       with torch.no_grad():
-        for valid_input, valid_labels in tqdm(valid_dataloader):
+        for batch_mask, batch_input_id, valid_labels in tqdm(valid_dataloader):
           valid_labels = valid_labels.to(device)
-          mask = valid_input['attention_mask'].to(device)
-          input_id = valid_input['input_ids'].squeeze(1).to(device)
+          mask = batch_mask.to(device)
+          input_id = batch_input_id.to(device)
 
           output = model(input_id, mask)
+          output = output.reshape((valid_batch_instance_size, valid_batch_instance_size))
+          output = m(output)
 
           loss = criterion(output, valid_labels.long())
 
