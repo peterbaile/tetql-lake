@@ -48,6 +48,8 @@ class LogDataset(data.Dataset):
       label.append(i)
       for t in ts:
         batch[i].append(tokenize(f'{q} [SEP] {t}'))
+      
+      print(len(batch[i]))
 
     return batch, label
   
