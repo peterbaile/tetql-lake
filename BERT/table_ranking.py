@@ -149,13 +149,14 @@ if __name__ == '__main__':
         mask = batch_mask.squeeze(0).to(device)
         input_id = batch_input_id.squeeze(0).to(device)
 
-        print(mask.shape, input_id.shape, train_labels.shape)
+        # print(mask.shape, input_id.shape, train_labels.shape)
 
         output = model(input_id, mask)
 
-        print(output.shape)
+        # print(output.shape)
 
-        output = output.reshape((train_batch_instance_size, train_batch_instance_size))
+        num_instance = train_labels.shape[0]
+        output = output.reshape((num_instance, num_instance))
         output = m(output)
 
         # acc = (output.argmax(dim=1) == train_labels).sum().item()
@@ -182,7 +183,8 @@ if __name__ == '__main__':
           input_id = batch_input_id.squeeze(0).to(device)
 
           output = model(input_id, mask)
-          output = output.reshape((valid_batch_instance_size, valid_batch_instance_size))
+          num_instance = train_labels.shape[0]
+          output = output.reshape((num_instance, num_instance))
           output = m(output)
 
           loss = criterion(output, valid_labels.long())
