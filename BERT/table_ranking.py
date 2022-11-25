@@ -34,7 +34,7 @@ class LogDataset(data.Dataset):
     self.num_instance = batch_instance_size
   
   def __getitem__(self, index):
-    print(f'index {index}')
+    # print(f'index {index}')
     start_idx = index * self.num_instance
     end_idx = (index + 1) * self.num_instance
 
