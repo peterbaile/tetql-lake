@@ -166,7 +166,7 @@ if __name__ == '__main__':
       print(f'\n epoch {epoch}: training loss {train_loss:.5f}, validation loss {valid_loss:.5f}')
 
       if best_valid_loss is None:
-        torch.save(model, f'./data/{args.path}/{MODEL_TYPE}.pt')
+        torch.save(model, f'./data/{args.path}/{MODEL_TYPE}-ranking.pt')
         print(f'model saved')
         best_valid_loss = valid_loss
       elif valid_loss >= best_valid_loss:
@@ -177,7 +177,7 @@ if __name__ == '__main__':
           print('early stopping')
           break
       else:
-        torch.save(model, f'./data/{args.path}/{MODEL_TYPE}.pt')
+        torch.save(model, f'./data/{args.path}/{MODEL_TYPE}-ranking.pt')
         print(f'model saved')
         best_valid_loss = valid_loss
         patience_cnt = 0
