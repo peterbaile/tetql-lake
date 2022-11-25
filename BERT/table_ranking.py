@@ -27,6 +27,11 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_TYPE)
 def tokenize(text):
   return tokenizer(text, padding='max_length', max_length=300, return_tensors='pt')
 
+EMBED_SIZE = {
+  'bert-tiny': 128,
+  'roberta-large': 1024
+}
+
 class LogDataset(data.Dataset):
   def __init__(self, questions, tables, batch_instance_size):
     self.questions = questions
@@ -82,7 +87,7 @@ class BertClassifier(nn.Module):
     self.bert = AutoModel.from_pretrained(MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
-    self.linear = nn.Linear(128, 1)
+    self.linear = nn.Linear(EMBED_SIZE[MODEL_TYPE], 1)
 
   def forward(self, input_id, mask):
     _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=False)
