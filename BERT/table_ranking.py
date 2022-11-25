@@ -18,7 +18,7 @@ random.seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
-MODEL_TYPE = 'bert-tiny'
+MODEL_TYPE = 'roberta-large'
 
 # tokenizer = BertTokenizer.from_pretrained(MODEL_TYPE)
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   print(f'mode: {args.mode}, source path: {args.path}')
-  learning_rate = 1e-6 # 1e-5 or 1e-6
+  learning_rate = 1e-5 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
   print(MODEL_TYPE)
 
