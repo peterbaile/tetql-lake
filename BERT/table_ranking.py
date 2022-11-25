@@ -67,11 +67,6 @@ class LogDataset(data.Dataset):
       else:
         batch_mask = torch.vstack((batch_mask, single_mask))
         batch_input_id = torch.vstack((batch_input_id, single_input_id))
-      
-      # print(len(batch[i]))
-    
-    print(batch_mask.shape)
-    print(batch_input_id.shape)
 
     return batch_mask, batch_input_id, torch.tensor(label)
   
@@ -165,6 +160,10 @@ if __name__ == '__main__':
         # total_acc_train += acc
 
         optimizer.zero_grad()
+
+        print(output.shape)
+        print(train_labels.shape)
+
         loss = criterion(output, train_labels.long())
         
         loss.backward()
