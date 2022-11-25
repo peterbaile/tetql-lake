@@ -118,6 +118,9 @@ if __name__ == '__main__':
         mask = train_input['attention_mask'].to(device)
         input_id = train_input['input_ids'].squeeze(1).to(device)
 
+        print(mask.shape)
+        print(input_id.shape)
+
         output = model(input_id, mask)
 
         acc = (output.argmax(dim=1) == train_labels).sum().item()
