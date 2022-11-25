@@ -12,10 +12,13 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 import numpy as np
 import random
 import argparse
+import math
 
 random.seed(0)
+torch.manual_seed(0)
+np.random.seed(0)
 
-MODEL_TYPE = 'roberta-large'
+MODEL_TYPE = 'bert-tiny'
 
 # tokenizer = BertTokenizer.from_pretrained(MODEL_TYPE)
 
@@ -25,10 +28,10 @@ def tokenize(text):
   return tokenizer(text, padding='max_length', max_length=300, return_tensors='pt')
 
 class LogDataset(data.Dataset):
-  def __init__(self, questions, tables):
+  def __init__(self, questions, tables, batch_instance_size):
     self.questions = questions
     self.tables = tables
-    self.num_instance = 7
+    self.num_instance = batch_instance_size
   
   def __getitem__(self, index):
     start_idx = index * self.num_instance
@@ -41,20 +44,39 @@ class LogDataset(data.Dataset):
       qs = self.questions[start_idx:]
       ts = self.tables[start_idx:]
     
-    batch = []
+    batch_mask = None
+    batch_input_id = None
     label = []
     for i, q in enumerate(qs):
-      batch.append([])
+      single_mask = None
+      single_input_id = None
       label.append(i)
       for t in ts:
-        batch[i].append(tokenize(f'{q} [SEP] {t}'))
-      
-      print(len(batch[i]))
+        r = tokenize(f'{q} [SEP] {t}')
 
-    return batch, label
+        if single_mask is None:
+          single_mask = r['attention_mask'].unsqueeze(0)
+          single_input_id = r['input_ids']
+        else:
+          single_mask = torch.vstack((single_mask, r['attention_mask'].unsqueeze(0)))
+          single_input_id = torch.vstack((single_input_id, r['input_ids']))
+      
+      if batch_mask is None:
+        batch_mask = single_mask
+        batch_input_id = single_input_id
+      else:
+        batch_mask = torch.vstack((batch_mask, single_mask))
+        batch_input_id = torch.vstack((batch_input_id, single_input_id))
+      
+      # print(len(batch[i]))
+    
+    print(batch_mask.shape)
+    print(batch_input_id.shape)
+
+    return batch_mask, batch_input_id, torch.tensor(label)
   
   def __len__(self):
-    return len(self.questions)
+    return math.ceil(len(self.questions) / self.num_instance)
 
 class BertClassifier(nn.Module):
   def __init__(self, dropout=0.1):
@@ -64,10 +86,10 @@ class BertClassifier(nn.Module):
     self.bert = AutoModel.from_pretrained(MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
-    self.linear = nn.Linear(1024, 1)
+    self.linear = nn.Linear(128, 1)
 
   def forward(self, input_id, mask):
-    _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=False)
+    _, pooled_output = self.bert(input_ids=input_id[0], attention_mask=mask[0], return_dict=False)
     dropout_output = self.dropout(pooled_output)
     linear_output = self.linear(dropout_output)
 
@@ -98,15 +120,15 @@ if __name__ == '__main__':
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
-    train_batch_size = 20
-    valid_batch_size = 100
+    train_batch_instance_size = 7
+    valid_batch_instance_size = 10
     model = BertClassifier().to(device)
-    print('finished downloading')
-    train_dataset = LogDataset(train_X, train_Y)
-    valid_dataset = LogDataset(valid_X, valid_Y)
+    print('finished loading model')
+    train_dataset = LogDataset(train_X, train_Y, train_batch_instance_size)
+    valid_dataset = LogDataset(valid_X, valid_Y, valid_batch_instance_size)
 
-    train_dataloader = data.DataLoader(train_dataset, batch_size = train_batch_size, shuffle = True)
-    valid_dataloader = data.DataLoader(valid_dataset, batch_size = valid_batch_size, shuffle = True)
+    train_dataloader = data.DataLoader(train_dataset, batch_size = 1, shuffle = True)
+    valid_dataloader = data.DataLoader(valid_dataset, batch_size = 1, shuffle = True)
 
     criterion = nn.NLLLoss(reduction='mean').to(device)
     m = nn.LogSoftmax(dim=1).to(device)
@@ -126,12 +148,16 @@ if __name__ == '__main__':
       total_acc_train = 0
       
       model.train()
-      for train_input, train_labels in tqdm(train_dataloader):
+      for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
+        # print(batch_mask)
+
         train_labels = train_labels.to(device)
-        mask = train_input['attention_mask'].to(device)
-        input_id = train_input['input_ids'].squeeze(1).to(device)
+        mask = batch_mask.to(device)
+        input_id = batch_input_id.to(device)
 
         output = model(input_id, mask)
+
+        output = output.reshape((train_batch_instance_size, train_batch_instance_size))
 
         output = m(output)
 
