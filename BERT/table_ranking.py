@@ -148,7 +148,12 @@ if __name__ == '__main__':
         mask = batch_mask.to(device)
         input_id = batch_input_id.to(device)
 
+        print(mask.shape, input_id.shape, train_labels.shape)
+
         output = model(input_id, mask)
+
+        print(output.shape)
+
         output = output.reshape((train_batch_instance_size, train_batch_instance_size))
         output = m(output)
 
