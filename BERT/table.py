@@ -138,9 +138,6 @@ if __name__ == '__main__':
           mask = valid_input['attention_mask'].to(device)
           input_id = valid_input['input_ids'].squeeze(1).to(device)
 
-          print(mask.shape)
-          print(input_id.shape)
-
           output = model(input_id, mask)
 
           loss = criterion(output, valid_labels.long())
@@ -200,6 +197,9 @@ if __name__ == '__main__':
         test_label = test_label.to(device)
         mask = test_input['attention_mask'].to(device)
         input_id = test_input['input_ids'].squeeze(1).to(device)
+
+        print(mask.shape)
+        print(input_id.shape)
 
         raw_output = model(input_id, mask)
         output = raw_output.argmax(dim=1)
