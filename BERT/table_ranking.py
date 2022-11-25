@@ -34,6 +34,7 @@ class LogDataset(data.Dataset):
     self.num_instance = batch_instance_size
   
   def __getitem__(self, index):
+    print(f'index {index}')
     start_idx = index * self.num_instance
     end_idx = (index + 1) * self.num_instance
 
@@ -145,8 +146,8 @@ if __name__ == '__main__':
       model.train()
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
         train_labels = train_labels.squeeze(0).to(device)
-        mask = batch_mask.to(device)
-        input_id = batch_input_id.to(device)
+        mask = batch_mask.squeeze(0).to(device)
+        input_id = batch_input_id.squeeze(0).to(device)
 
         print(mask.shape, input_id.shape, train_labels.shape)
 
@@ -177,8 +178,8 @@ if __name__ == '__main__':
       with torch.no_grad():
         for batch_mask, batch_input_id, valid_labels in tqdm(valid_dataloader):
           valid_labels = valid_labels.squeeze(0).to(device)
-          mask = batch_mask.to(device)
-          input_id = batch_input_id.to(device)
+          mask = batch_mask.squeeze(0).to(device)
+          input_id = batch_input_id.squeeze(0).to(device)
 
           output = model(input_id, mask)
           output = output.reshape((valid_batch_instance_size, valid_batch_instance_size))
