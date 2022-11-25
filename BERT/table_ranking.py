@@ -68,7 +68,6 @@ class LogDataset(data.Dataset):
         batch_mask = torch.vstack((batch_mask, single_mask))
         batch_input_id = torch.vstack((batch_input_id, single_input_id))
 
-    print(label)
     return batch_mask, batch_input_id, torch.tensor(label)
   
   def __len__(self):
@@ -145,9 +144,7 @@ if __name__ == '__main__':
       
       model.train()
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
-        # print(batch_mask)
-
-        train_labels = train_labels.to(device)
+        train_labels = train_labels.squeeze(0).to(device)
         mask = batch_mask.to(device)
         input_id = batch_input_id.to(device)
 
@@ -160,9 +157,9 @@ if __name__ == '__main__':
 
         optimizer.zero_grad()
 
-        print(output.shape)
-        print(train_labels.shape)
-        print(train_labels)
+        # print(output.shape)
+        # print(train_labels.shape)
+        # print(train_labels)
 
         loss = criterion(output, train_labels.long())
         
@@ -174,7 +171,7 @@ if __name__ == '__main__':
       model.eval()
       with torch.no_grad():
         for batch_mask, batch_input_id, valid_labels in tqdm(valid_dataloader):
-          valid_labels = valid_labels.to(device)
+          valid_labels = valid_labels.squeeze(0).to(device)
           mask = batch_mask.to(device)
           input_id = batch_input_id.to(device)
 
