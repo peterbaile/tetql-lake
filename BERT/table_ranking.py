@@ -8,7 +8,7 @@ from torch import nn
 from torch.optim import Adam
 from tqdm import tqdm
 import pandas as pd
-from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 import numpy as np
 import random
 import argparse
@@ -79,6 +79,17 @@ class LogDataset(data.Dataset):
   
   def __len__(self):
     return math.ceil(len(self.questions) / self.num_instance)
+
+class DevDataset(data.Dataset):
+  def __init__(self, texts, labels):
+    self.texts = texts
+    self.labels = labels
+  
+  def __getitem__(self, index):
+    return self.texts[index], self.labels[index]
+
+  def __len__(self):
+    return len(self.texts)
 
 class BertClassifier(nn.Module):
   def __init__(self, dropout=0.1):
@@ -221,3 +232,59 @@ if __name__ == '__main__':
         print(f'model saved')
         best_valid_loss = valid_loss
         patience_cnt = 0
+
+  elif args.mode == 'dev':
+    print(f'dev partition: {args.devpart}, dev file: {args.devfile}')
+    model = torch.load(f'./data/{args.path}/{MODEL_TYPE}-ranking.pt')
+    dev_batch_size = 100 # this has to be the same as the number of candidates picked
+
+    dev_df = pd.read_csv(f'./data/dev/{args.devfile}_ranking.csv')
+
+    if args.devpart != -1:
+      part_percent = 0.5
+      cut = int(part_percent * dev_df.shape[0])
+      if args.devpart == 0:
+        dev_df = dev_df[:cut]
+      else:
+        dev_df = dev_df[cut:]
+
+    dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
+    dev_dataset = DevDataset(dev_X, dev_Y)
+    dev_dataloader = data.DataLoader(dev_dataset, batch_size = dev_batch_size)
+
+    total_output = None
+    total_acc_test = 0
+    total_output_prob = None
+
+    m = nn.LogSoftmax(dim=1).to(device)
+
+    model.eval()
+    with torch.no_grad():
+      for test_input, test_label in tqdm(dev_dataloader):
+        test_label = test_label.to(device)
+        mask = test_input['attention_mask'].to(device)
+        input_id = test_input['input_ids'].squeeze(1).to(device)
+
+        raw_output = model(input_id, mask)
+        raw_output = m(raw_output).squeeze(1)
+        max_idx = torch.argmax(raw_output)
+
+        output = [0 for i in range(dev_batch_size)]
+        output[max_idx] = 1
+
+        if total_output is None:
+          total_output = output
+          # total_output_prob = (raw_output.max()).cpu()
+        else:
+          total_output += output
+          # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
+
+    print(f'accuracy: {accuracy_score(dev_Y, total_output):.5f}')
+    print(f'precision: {precision_score(dev_Y, total_output):.5f}')
+    print(f'recall: {recall_score(dev_Y, total_output):.5f}')
+    print(f'f1: {f1_score(dev_Y, total_output):.5f}')
+
+    # np.save automatically add .npy extension
+    # np.save(f'./data/dev/{args.devfile}_label_{args.devpart}', dev_Y)
+    # np.save(f'./data/dev/{args.devfile}_output_{args.devpart}', total_output.detach().numpy())
+    # print(f'output saved')
