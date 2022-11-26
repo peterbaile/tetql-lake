@@ -18,7 +18,7 @@ random.seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
-MODEL_TYPE = 'roberta-large'
+MODEL_TYPE = 'bert-base-uncased'
 
 # tokenizer = BertTokenizer.from_pretrained(MODEL_TYPE)
 
@@ -29,6 +29,7 @@ def tokenize(text):
 
 EMBED_SIZE = {
   'bert-tiny': 128,
+  'bert-base-uncased': 768,
   'roberta-large': 1024
 }
 
@@ -111,7 +112,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   print(f'mode: {args.mode}, source path: {args.path}')
-  learning_rate = 1e-5 # 1e-5 or 1e-6
+  learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
   print(MODEL_TYPE)
 
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
-    train_batch_instance_size = 4
+    train_batch_instance_size = 7
     valid_batch_instance_size = 10
     model = BertClassifier().to(device)
     print('finished loading model')
