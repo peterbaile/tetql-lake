@@ -263,11 +263,11 @@ if __name__ == '__main__':
         mask = test_input['attention_mask'].to(device)
         input_id = test_input['input_ids'].squeeze(1).to(device)
 
-        raw_output = model(input_id, mask)
-        raw_output = m(raw_output).squeeze(1)
+        raw_output = model(input_id, mask).squeeze(1)
+        print(raw_output.shape)
         max_idx = torch.argmax(raw_output)
 
-        output = [0 for i in range(dev_batch_size)]
+        output = [0 for _ in range(dev_batch_size)]
         output[max_idx] = 1
 
         if total_output is None:
