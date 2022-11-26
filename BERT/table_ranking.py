@@ -18,9 +18,7 @@ random.seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
-MODEL_TYPE = 'bert-base-uncased'
-
-# tokenizer = BertTokenizer.from_pretrained(MODEL_TYPE)
+MODEL_TYPE = 'roberta-base'
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_TYPE)
 
@@ -30,6 +28,7 @@ def tokenize(text):
 EMBED_SIZE = {
   'bert-tiny': 128,
   'bert-base-uncased': 768,
+  'roberta-base': 768,
   'roberta-large': 1024
 }
 
@@ -95,7 +94,6 @@ class BertClassifier(nn.Module):
   def __init__(self, dropout=0.1):
     super(BertClassifier, self).__init__()
 
-    # self.bert = BertModel.from_pretrained(MODEL_TYPE)
     self.bert = AutoModel.from_pretrained(MODEL_TYPE)
     self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
@@ -110,7 +108,7 @@ class BertClassifier(nn.Module):
 
 device = 'cuda'
 
-max_epochs = 50
+max_epochs = 100
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
