@@ -266,7 +266,7 @@ if __name__ == '__main__':
         raw_output = model(input_id, mask).squeeze(1)
         
         max_idx = torch.argmax(raw_output)
-        print(max_idx)
+        # print(max_idx)
 
         output = [0 for _ in range(dev_batch_size)]
         output[max_idx] = 1
