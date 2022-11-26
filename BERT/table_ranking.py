@@ -193,7 +193,11 @@ if __name__ == '__main__':
         # print(output.shape)
 
         num_instance = train_labels.shape[0]
-        output = output.reshape((num_instance, num_instance))
+
+        if args.addnegative:
+          output = output.reshape((num_instance, num_instance * 2))
+        else:
+          output = output.reshape((num_instance, num_instance))
         output = m(output)
 
         # acc = (output.argmax(dim=1) == train_labels).sum().item()
@@ -221,7 +225,12 @@ if __name__ == '__main__':
 
           output = model(input_id, mask)
           num_instance = valid_labels.shape[0]
-          output = output.reshape((num_instance, num_instance))
+
+          if args.addnegative:
+            output = output.reshape((num_instance, num_instance * 2))
+          else:
+            output = output.reshape((num_instance, num_instance))
+            
           output = m(output)
 
           loss = criterion(output, valid_labels.long())
