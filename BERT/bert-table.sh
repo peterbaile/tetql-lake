@@ -7,4 +7,4 @@ module load anaconda/2021b
 conda activate
 
 # Run the script
-python table.py train train_spider
+python table_ranking.py --mode train --path train_spider
