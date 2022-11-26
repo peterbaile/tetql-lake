@@ -32,11 +32,12 @@ EMBED_SIZE = {
   'roberta-large': 1024
 }
 
-class LogDataset(data.Dataset):
-  def __init__(self, questions, tables, batch_instance_size):
+class TrainDataset(data.Dataset):
+  def __init__(self, questions, tables, batch_instance_size, add_negative):
     self.questions = questions
     self.tables = tables
     self.num_instance = batch_instance_size
+    self.add_negative = add_negative
   
   def __getitem__(self, index):
     # print(f'index {index}')
@@ -49,6 +50,16 @@ class LogDataset(data.Dataset):
     else:
       qs = self.questions[start_idx:]
       ts = self.tables[start_idx:]
+    
+    if self.add_negative:
+      pos_ts = []
+      neg_ts = []
+      for t in ts:
+        pos_t, neg_t = t.split('#sep#')
+        pos_ts.append(pos_t)
+        neg_ts.append(neg_t)
+      
+      ts = pos_ts + neg_ts
     
     batch_mask = None
     batch_input_id = None
@@ -95,7 +106,7 @@ class BertClassifier(nn.Module):
     super(BertClassifier, self).__init__()
 
     self.bert = AutoModel.from_pretrained(MODEL_TYPE)
-    self.bert.resize_token_embeddings(len(tokenizer))
+    # self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
     self.linear = nn.Linear(EMBED_SIZE[MODEL_TYPE], 1)
 
@@ -117,17 +128,28 @@ if __name__ == '__main__':
   parser.add_argument('--path', type=str)
   parser.add_argument('--devfile', type=str)
   parser.add_argument('--devpart', type=int)
+  parser.add_argument('--addnegative', type=bool)
 
   args = parser.parse_args()
 
-  print(f'mode: {args.mode}, source path: {args.path}')
+  print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}')
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
   print(MODEL_TYPE)
+  
+  if args.addnegative:
+    MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking-negative.pt'
+  else:
+    MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking.pt'
 
   if args.mode == 'train':
-    train_df = pd.read_csv(f'./data/{args.path}/train_ranking.csv')
-    valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking.csv')
+    if args.addnegative:
+      train_df = pd.read_csv(f'./data/{args.path}/train_ranking_negative.csv')
+      valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking_negative.csv')
+    else:
+      train_df = pd.read_csv(f'./data/{args.path}/train_ranking.csv')
+      valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking.csv')
+    
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
@@ -135,8 +157,8 @@ if __name__ == '__main__':
     valid_batch_instance_size = 10
     model = BertClassifier().to(device)
     print('finished loading model')
-    train_dataset = LogDataset(train_X, train_Y, train_batch_instance_size)
-    valid_dataset = LogDataset(valid_X, valid_Y, valid_batch_instance_size)
+    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative)
+    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative)
 
     train_dataloader = data.DataLoader(train_dataset, batch_size = 1, shuffle = True)
     valid_dataloader = data.DataLoader(valid_dataset, batch_size = 1, shuffle = True)
@@ -215,7 +237,7 @@ if __name__ == '__main__':
       print(f'\n epoch {epoch}: training loss {train_loss:.5f}, validation loss {valid_loss:.5f}')
 
       if best_valid_loss is None:
-        torch.save(model, f'./data/{args.path}/{MODEL_TYPE}-ranking.pt')
+        torch.save(model, MODEL_PATH)
         print(f'model saved')
         best_valid_loss = valid_loss
       elif valid_loss >= best_valid_loss:
@@ -226,14 +248,14 @@ if __name__ == '__main__':
           print('early stopping')
           break
       else:
-        torch.save(model, f'./data/{args.path}/{MODEL_TYPE}-ranking.pt')
+        torch.save(model, MODEL_PATH)
         print(f'model saved')
         best_valid_loss = valid_loss
         patience_cnt = 0
 
   elif args.mode == 'dev':
     print(f'dev partition: {args.devpart}, dev file: {args.devfile}')
-    model = torch.load(f'./data/{args.path}/{MODEL_TYPE}-ranking.pt')
+    model = torch.load(MODEL_PATH)
     dev_batch_size = 100 # this has to be the same as the number of candidates picked
 
     dev_df = pd.read_csv(f'./data/dev/{args.devfile}_ranking.csv')
