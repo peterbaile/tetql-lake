@@ -179,6 +179,8 @@ if __name__ == '__main__':
 
     for epoch in range(max_epochs):
       total_acc_train = 0
+
+      torch.cuda.empty_cache()
       
       model.train()
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
@@ -215,6 +217,10 @@ if __name__ == '__main__':
         optimizer.step()
 
         train_losses.append(loss.item())
+
+      del train_labels
+      del mask
+      del input_id
       
       model.eval()
       with torch.no_grad():
@@ -230,12 +236,16 @@ if __name__ == '__main__':
             output = output.reshape((num_instance, num_instance * 2))
           else:
             output = output.reshape((num_instance, num_instance))
-            
+
           output = m(output)
 
           loss = criterion(output, valid_labels.long())
 
           valid_losses.append(loss.item())
+
+      del valid_labels
+      del mask
+      del input_id
       
       train_loss = np.average(train_losses)
       valid_loss = np.average(valid_losses)
