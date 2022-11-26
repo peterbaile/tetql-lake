@@ -82,8 +82,8 @@ class LogDataset(data.Dataset):
 
 class DevDataset(data.Dataset):
   def __init__(self, texts, labels):
-    self.texts = texts
-    self.labels = labels
+    self.texts = [tokenize(text) for text in texts]
+    self.labels = torch.tensor(labels.values)
   
   def __getitem__(self, index):
     return self.texts[index], self.labels[index]
