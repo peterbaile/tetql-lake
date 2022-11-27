@@ -282,11 +282,11 @@ if __name__ == '__main__':
 
     if args.devpart != -1:
       part_percent = 0.5
-      cut = int(part_percent * dev_df.shape[0])
+      cut = int(part_percent * (dev_df.shape[0] / dev_batch_size))
       if args.devpart == 0:
-        dev_df = dev_df[:cut]
+        dev_df = dev_df[:cut * dev_batch_size]
       else:
-        dev_df = dev_df[cut:]
+        dev_df = dev_df[cut * dev_batch_size:]
 
     dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
     dev_dataset = DevDataset(dev_X, dev_Y)
