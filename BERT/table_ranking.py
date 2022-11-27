@@ -135,12 +135,13 @@ if __name__ == '__main__':
   print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}')
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
-  print(MODEL_TYPE)
   
   if args.addnegative:
     MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking-negative.pt'
   else:
     MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking.pt'
+
+  print(MODEL_TYPE, MODEL_PATH)
 
   if args.mode == 'train':
     if args.addnegative:
