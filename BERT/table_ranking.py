@@ -92,7 +92,7 @@ class TrainDataset(data.Dataset):
 
 class DevDataset(data.Dataset):
   def __init__(self, texts, labels):
-    self.texts = [tokenize(text) for text in texts]
+    self.texts = [tokenize(text) for text in tqdm(texts)]
     self.labels = torch.tensor(labels.values)
   
   def __getitem__(self, index):
@@ -326,6 +326,6 @@ if __name__ == '__main__':
     print(f'f1: {f1_score(dev_Y, total_output):.5f}')
 
     # np.save automatically add .npy extension
-    # np.save(f'./data/dev/{args.devfile}_label_{args.devpart}', dev_Y)
-    # np.save(f'./data/dev/{args.devfile}_output_{args.devpart}', total_output.detach().numpy())
-    # print(f'output saved')
+    np.save(f'./data/dev/{args.devfile}_label_{args.devpart}_ranking', dev_Y)
+    np.save(f'./data/dev/{args.devfile}_output_{args.devpart}_ranking', total_output.detach().numpy())
+    print(f'output saved')
