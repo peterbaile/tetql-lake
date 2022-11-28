@@ -276,7 +276,8 @@ if __name__ == '__main__':
   elif args.mode == 'dev':
     print(f'dev partition: {args.devpart}, dev file: {args.devfile}')
     model = torch.load(MODEL_PATH)
-    dev_batch_size = 876 # this has to be the same as the number of candidates picked (876 no join, 100 idf)
+    dev_batch_size = 100 # this has to be the same as the number of candidates picked (876 no join, 100 idf)
+    top_k = 2
 
     dev_df = pd.read_csv(f'./data/dev/{args.devfile}_ranking.csv')
 
@@ -307,11 +308,14 @@ if __name__ == '__main__':
 
         raw_output = model(input_id, mask).squeeze(1)
         
-        max_idx = torch.argmax(raw_output)
+        _, max_indices = torch.topk(raw_output, top_k)
+        max_indices = max_indices.tolist()
         # print(max_idx)
 
         output = [0 for _ in range(dev_batch_size)]
-        output[max_idx] = 1
+
+        for max_idx in max_indices:
+          output[max_idx] = 1
 
         if total_output is None:
           total_output = output
@@ -326,6 +330,6 @@ if __name__ == '__main__':
     print(f'f1: {f1_score(dev_Y, total_output):.5f}')
 
     # np.save automatically add .npy extension
-    np.save(f'./data/dev/{args.devfile}_label_{args.devpart}_ranking', dev_Y)
-    np.save(f'./data/dev/{args.devfile}_output_{args.devpart}_ranking', total_output.detach().numpy())
-    print(f'output saved')
+    # np.save(f'./data/dev/{args.devfile}_label_{args.devpart}_ranking', dev_Y)
+    # np.save(f'./data/dev/{args.devfile}_output_{args.devpart}_ranking', total_output)
+    # print(f'output saved')
