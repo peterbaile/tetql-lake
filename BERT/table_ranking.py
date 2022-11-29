@@ -129,6 +129,7 @@ if __name__ == '__main__':
   parser.add_argument('--devfile', type=str)
   parser.add_argument('--devpart', type=int)
   parser.add_argument('--addnegative', type=bool)
+  parser.add_argument('--topk', type=int)
 
   args = parser.parse_args()
 
@@ -274,10 +275,9 @@ if __name__ == '__main__':
         patience_cnt = 0
 
   elif args.mode == 'dev':
-    print(f'dev partition: {args.devpart}, dev file: {args.devfile}')
+    print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}')
     model = torch.load(MODEL_PATH)
     dev_batch_size = 876 # this has to be the same as the number of candidates picked (876 no join, 100 idf)
-    top_k = 2
 
     dev_df = pd.read_csv(f'./data/dev/{args.devfile}_ranking.csv')
 
@@ -308,7 +308,7 @@ if __name__ == '__main__':
 
         raw_output = model(input_id, mask).squeeze(1)
         
-        _, max_indices = torch.topk(raw_output, top_k)
+        _, max_indices = torch.topk(raw_output, args.topk)
         max_indices = max_indices.tolist()
         # print(max_idx)
 
