@@ -282,12 +282,14 @@ if __name__ == '__main__':
     dev_df = pd.read_csv(f'./data/dev/{args.devfile}_ranking.csv')
 
     if args.devpart != -1:
-      part_percent = 0.5
+      part_percent = 0.3
       cut = int(part_percent * (dev_df.shape[0] / dev_batch_size))
       if args.devpart == 0:
         dev_df = dev_df[:cut * dev_batch_size]
+      elif args.devpart == 1:
+        dev_df = dev_df[cut * dev_batch_size: 2*cut*dev_batch_size]
       else:
-        dev_df = dev_df[cut * dev_batch_size:]
+        dev_df = dev_df[2*cut*dev_batch_size:]
 
     dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
     dev_dataset = DevDataset(dev_X, dev_Y)
