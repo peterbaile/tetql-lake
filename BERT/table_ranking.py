@@ -341,8 +341,8 @@ if __name__ == '__main__':
 
     num_parts = 3
 
-    dev_outputs = [np.load(f'./data/dev/{args.devfile}_output_{i}_ranking') for i in range(num_parts)]
-    dev_labels = [np.load(f'./data/dev/{args.devfile}_label_{i}_ranking') for i in range(num_parts)]
+    dev_outputs = [np.load(f'./data/dev/{args.devfile}_output_{i}_ranking.npy') for i in range(num_parts)]
+    dev_labels = [np.load(f'./data/dev/{args.devfile}_label_{i}_ranking.npy') for i in range(num_parts)]
 
     for i in range(num_parts):
       output = np.hstack(dev_outputs)
