@@ -332,6 +332,6 @@ if __name__ == '__main__':
     print(f'f1: {f1_score(dev_Y, total_output):.5f}')
 
     # np.save automatically add .npy extension
-    # np.save(f'./data/dev/{args.devfile}_label_{args.devpart}_ranking', dev_Y)
-    # np.save(f'./data/dev/{args.devfile}_output_{args.devpart}_ranking', total_output)
-    # print(f'output saved')
+    np.save(f'./data/dev/{args.devfile}_label_{args.devpart}_ranking', dev_Y)
+    np.save(f'./data/dev/{args.devfile}_output_{args.devpart}_ranking', total_output)
+    print(f'output saved')
