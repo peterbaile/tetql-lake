@@ -335,3 +335,19 @@ if __name__ == '__main__':
     np.save(f'./data/dev/{args.devfile}_label_{args.devpart}_ranking', dev_Y)
     np.save(f'./data/dev/{args.devfile}_output_{args.devpart}_ranking', total_output)
     print(f'output saved')
+  
+  elif args.mode == 'score':
+    # print(file_utils.default_cache_path)
+
+    num_parts = 3
+
+    dev_outputs = [np.load(f'./data/dev/{args.devfile}_output_{i}_ranking') for i in range(num_parts)]
+    dev_labels = [np.load(f'./data/dev/{args.devfile}_label_{i}_ranking') for i in range(num_parts)]
+
+    for i in range(num_parts):
+      output = np.hstack(dev_outputs)
+      label = np.hstack(dev_labels)
+
+    print(f'precision: {precision_score(label, output):.3f}')
+    print(f'recall: {recall_score(label, output):.3f}')
+    print(f'f1: {f1_score(label, output):.3f}')
