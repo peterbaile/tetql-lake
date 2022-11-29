@@ -33,11 +33,12 @@ EMBED_SIZE = {
 }
 
 class TrainDataset(data.Dataset):
-  def __init__(self, questions, tables, batch_instance_size, add_negative):
+  def __init__(self, questions, tables, batch_instance_size, add_negative, join):
     self.questions = questions
     self.tables = tables
     self.num_instance = batch_instance_size
     self.add_negative = add_negative
+    self.join = join
   
   def __getitem__(self, index):
     # print(f'index {index}')
@@ -51,23 +52,35 @@ class TrainDataset(data.Dataset):
       qs = self.questions[start_idx:]
       ts = self.tables[start_idx:]
     
-    if self.add_negative:
+    label = []
+    if self.join:
       pos_ts = []
       neg_ts = []
+      # assume that we only have 1 negative table from IDF for now
       for t in ts:
-        pos_t, neg_t = t.split('#sep#')
-        pos_ts.append(pos_t)
-        neg_ts.append(neg_t)
+        pos_ts_len = len(pos_ts)
+
+        _ts = t.split('#sep#')
+
+        if self.add_negative:
+          pos_ts += _ts[:-1]
+          neg_ts.append(_ts[-1])
+          _label = [pos_ts_len + i for i in range(len(_ts) - 1)]
+        else:
+          pos_ts += _ts
+          _label = [pos_ts_len + i for i in range(len(_ts))]
+        
+        label.append(_label)
       
       ts = pos_ts + neg_ts
     
     batch_mask = None
     batch_input_id = None
-    label = []
-    for i, q in enumerate(qs):
+
+    for q in qs:
       single_mask = None
       single_input_id = None
-      label.append(i)
+
       for t in ts:
         r = tokenize(f'{q} [SEP] {t}')
 
@@ -128,7 +141,8 @@ if __name__ == '__main__':
   parser.add_argument('--path', type=str)
   parser.add_argument('--devfile', type=str)
   parser.add_argument('--devpart', type=int)
-  parser.add_argument('--addnegative', type=bool)
+  parser.add_argument('--addnegative', type=bool, default=False)
+  parser.add_argument('--join', type=bool, default=False)
   parser.add_argument('--topk', type=int)
 
   args = parser.parse_args()
@@ -136,11 +150,16 @@ if __name__ == '__main__':
   print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}')
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
+
+  MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking'
+
+  if args.join:
+    MODEL_PATH += '-join'
   
   if args.addnegative:
-    MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking-negative.pt'
-  else:
-    MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking.pt'
+    MODEL_PATH += '-negative'
+  
+  MODEL_PATH += '.pt'
 
   print(MODEL_TYPE, MODEL_PATH)
 
@@ -159,8 +178,8 @@ if __name__ == '__main__':
     valid_batch_instance_size = 10
     model = BertClassifier().to(device)
     print('finished loading model')
-    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative)
-    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative)
+    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative, args.join)
+    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative, args.join)
 
     train_dataloader = data.DataLoader(train_dataset, batch_size = 1, shuffle = True)
     valid_dataloader = data.DataLoader(valid_dataset, batch_size = 1, shuffle = True)
@@ -197,15 +216,10 @@ if __name__ == '__main__':
         # print(output.shape)
 
         num_instance = train_labels.shape[0]
+        num_tables = output.shape[0] / num_instance
 
-        if args.addnegative:
-          output = output.reshape((num_instance, num_instance * 2))
-        else:
-          output = output.reshape((num_instance, num_instance))
-        output = m(output)
-
-        # acc = (output.argmax(dim=1) == train_labels).sum().item()
-        # total_acc_train += acc
+        output = output.reshape((num_instance, num_tables))
+        # output = m(output)
 
         optimizer.zero_grad()
 
@@ -213,7 +227,9 @@ if __name__ == '__main__':
         # print(train_labels.shape)
         # print(train_labels)
 
-        loss = criterion(output, train_labels.long())
+        loss = torch.logsumexp(output, dim=1) - torch.logsumexp(torch.gather(output, 1, train_labels), dim=1)
+        loss /= num_tables
+        loss = torch.sum(loss)
         
         loss.backward()
         optimizer.step()
@@ -233,13 +249,13 @@ if __name__ == '__main__':
 
           output = model(input_id, mask)
           num_instance = valid_labels.shape[0]
+          num_tables = output.shape[0] / num_instance
 
-          if args.addnegative:
-            output = output.reshape((num_instance, num_instance * 2))
-          else:
-            output = output.reshape((num_instance, num_instance))
+          output = output.reshape((num_instance, num_tables))
 
-          loss = torch.logsumexp(output, dim=1) - torch.logsumexp(output[valid_labels], dim=1)
+          loss = torch.logsumexp(output, dim=1) - torch.logsumexp(torch.gather(output, 1, valid_labels), dim=1)
+          loss /= num_tables
+          loss = torch.sum(loss)
 
           valid_losses.append(loss.item())
 
