@@ -234,7 +234,7 @@ if __name__ == '__main__':
         # print(train_labels.shape)
         # print(train_labels)
 
-        numerator = torch.empty((num_instance))
+        numerator = torch.empty((num_instance), device=device)
         for i, train_label in enumerate(train_labels):
           numerator[i] = torch.logsumexp(output[i][train_label], 0)
 
@@ -263,7 +263,7 @@ if __name__ == '__main__':
 
           output = output.reshape((num_instance, num_tables))
 
-          numerator = torch.empty((num_instance))
+          numerator = torch.empty((num_instance), device=device)
           for i, valid_label in enumerate(valid_labels):
             numerator[i] = torch.logsumexp(output[i][valid_label], 0)
 
