@@ -212,9 +212,8 @@ if __name__ == '__main__':
       
       model.train()
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
-        print(train_labels)
+        # print(train_labels)
         mask = batch_mask.to(device)
-        print(mask.shape)
         input_id = batch_input_id.to(device)
 
         # print(mask.shape, input_id.shape, train_labels.shape)
@@ -237,7 +236,7 @@ if __name__ == '__main__':
 
         numerator = torch.empty((num_instance))
         for i, train_label in enumerate(train_labels):
-          numerator[i] = torch.logsumexp(output[i][train_label])
+          numerator[i] = torch.logsumexp(output[i][train_label], 0)
 
         loss = torch.logsumexp(output, dim=1) - numerator
         loss /= num_tables
@@ -259,12 +258,16 @@ if __name__ == '__main__':
           input_id = batch_input_id.to(device)
 
           output = model(input_id, mask)
-          num_instance = valid_labels.shape[0]
+          num_instance = len(valid_labels)
           num_tables = int(output.shape[0] / num_instance)
 
           output = output.reshape((num_instance, num_tables))
 
-          loss = torch.logsumexp(output, dim=1) - torch.logsumexp(torch.gather(output, 1, valid_labels), dim=1)
+          numerator = torch.empty((num_instance))
+          for i, valid_label in enumerate(valid_labels):
+            numerator[i] = torch.logsumexp(output[i][valid_label], 0)
+
+          loss = torch.logsumexp(output, dim=1) - numerator
           loss /= num_tables
           loss = torch.sum(loss)
 
