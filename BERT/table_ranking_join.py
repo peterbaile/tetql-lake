@@ -144,9 +144,10 @@ def suffix(base, args, connector, ext):
   return new_base
 
 def collate_fn(batch):
-  print(batch)
+  # print(batch[0])
 
-  return batch
+  # this is OK because batch_size = 1
+  return batch[0]
 
 device = 'cuda'
 
@@ -211,11 +212,10 @@ if __name__ == '__main__':
       
       model.train()
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
-        train_labels = train_labels
         print(train_labels)
         mask = batch_mask.to(device)
         print(mask.shape)
-        input_id = batch_input_id.squeeze(0).to(device)
+        input_id = batch_input_id.to(device)
 
         # print(mask.shape, input_id.shape, train_labels.shape)
 
@@ -255,9 +255,8 @@ if __name__ == '__main__':
       model.eval()
       with torch.no_grad():
         for batch_mask, batch_input_id, valid_labels in tqdm(valid_dataloader):
-          valid_labels = valid_labels.squeeze(0).to(device)
-          mask = batch_mask.squeeze(0).to(device)
-          input_id = batch_input_id.squeeze(0).to(device)
+          mask = batch_mask.to(device)
+          input_id = batch_input_id.to(device)
 
           output = model(input_id, mask)
           num_instance = valid_labels.shape[0]
