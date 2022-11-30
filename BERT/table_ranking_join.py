@@ -98,7 +98,7 @@ class TrainDataset(data.Dataset):
         batch_mask = torch.vstack((batch_mask, single_mask))
         batch_input_id = torch.vstack((batch_input_id, single_input_id))
 
-    return batch_mask, batch_input_id, torch.tensor(label)
+    return batch_mask, batch_input_id, label
   
   def __len__(self):
     return math.ceil(len(self.questions) / self.num_instance)
@@ -206,7 +206,8 @@ if __name__ == '__main__':
       
       model.train()
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
-        train_labels = train_labels.squeeze(0).to(device)
+        train_labels = train_labels
+        print(train_labels)
         mask = batch_mask.squeeze(0).to(device)
         input_id = batch_input_id.squeeze(0).to(device)
 
