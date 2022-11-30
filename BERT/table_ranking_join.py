@@ -169,8 +169,8 @@ if __name__ == '__main__':
   print(MODEL_TYPE, MODEL_PATH)
 
   if args.mode == 'train':
-    train_df = pd.read_csv(f'./data/{args.path}/train_ranking', args, '_', '.csv')
-    valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking', args, '_', '.csv')
+    train_df = pd.read_csv(suffix(f'./data/{args.path}/train_ranking', args, '_', '.csv'))
+    valid_df = pd.read_csv(suffix(f'./data/{args.path}/valid_ranking', args, '_', '.csv'))
     
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
