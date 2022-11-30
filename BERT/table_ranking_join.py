@@ -143,6 +143,11 @@ def suffix(base, args, connector, ext):
 
   return new_base
 
+def collate_fn(batch):
+  print(batch)
+
+  return batch
+
 device = 'cuda'
 
 max_epochs = 100
@@ -179,8 +184,8 @@ if __name__ == '__main__':
     valid_batch_instance_size = 10
     model = BertClassifier().to(device)
     print('finished loading model')
-    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative, args.join)
-    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative, args.join)
+    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative, args.join, collate_fn=collate_fn)
+    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative, args.join, collate_fn=collate_fn)
 
     train_dataloader = data.DataLoader(train_dataset, batch_size = 1, shuffle = True)
     valid_dataloader = data.DataLoader(valid_dataset, batch_size = 1, shuffle = True)
@@ -208,7 +213,8 @@ if __name__ == '__main__':
       for batch_mask, batch_input_id, train_labels in tqdm(train_dataloader):
         train_labels = train_labels
         print(train_labels)
-        mask = batch_mask.squeeze(0).to(device)
+        mask = batch_mask.to(device)
+        print(mask.shape)
         input_id = batch_input_id.squeeze(0).to(device)
 
         # print(mask.shape, input_id.shape, train_labels.shape)
