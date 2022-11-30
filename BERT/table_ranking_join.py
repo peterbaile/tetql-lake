@@ -130,6 +130,19 @@ class BertClassifier(nn.Module):
 
     return linear_output
 
+def suffix(base, args, connector, ext):
+  new_base = base
+
+  if args.join:
+    new_base += f'{connector}join'
+  
+  if args.addnegative:
+    new_base += f'{connector}negative'
+  
+  new_base += ext
+
+  return new_base
+
 device = 'cuda'
 
 max_epochs = 100
@@ -151,25 +164,13 @@ if __name__ == '__main__':
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
-  MODEL_PATH = f'./data/{args.path}/{MODEL_TYPE}-ranking'
-
-  if args.join:
-    MODEL_PATH += '-join'
-  
-  if args.addnegative:
-    MODEL_PATH += '-negative'
-  
-  MODEL_PATH += '.pt'
+  MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
 
   print(MODEL_TYPE, MODEL_PATH)
 
   if args.mode == 'train':
-    if args.addnegative:
-      train_df = pd.read_csv(f'./data/{args.path}/train_ranking_negative.csv')
-      valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking_negative.csv')
-    else:
-      train_df = pd.read_csv(f'./data/{args.path}/train_ranking.csv')
-      valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking.csv')
+    train_df = pd.read_csv(f'./data/{args.path}/train_ranking', args, '_', '.csv')
+    valid_df = pd.read_csv(f'./data/{args.path}/valid_ranking', args, '_', '.csv')
     
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
