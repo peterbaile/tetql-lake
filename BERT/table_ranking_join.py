@@ -217,7 +217,7 @@ if __name__ == '__main__':
 
         # print(output.shape)
 
-        num_instance = train_labels.shape[0]
+        num_instance = len(train_labels)
         num_tables = int(output.shape[0] / num_instance)
 
         output = output.reshape((num_instance, num_tables))
@@ -229,7 +229,11 @@ if __name__ == '__main__':
         # print(train_labels.shape)
         # print(train_labels)
 
-        loss = torch.logsumexp(output, dim=1) - torch.logsumexp(torch.gather(output, 1, train_labels), dim=1)
+        numerator = torch.empty((num_instance))
+        for i, train_label in enumerate(train_labels):
+          numerator[i] = torch.logsumexp(output[i][train_label])
+
+        loss = torch.logsumexp(output, dim=1) - numerator
         loss /= num_tables
         loss = torch.sum(loss)
         
