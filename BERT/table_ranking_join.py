@@ -184,11 +184,11 @@ if __name__ == '__main__':
     valid_batch_instance_size = 10
     model = BertClassifier().to(device)
     print('finished loading model')
-    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative, args.join, collate_fn=collate_fn)
-    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative, args.join, collate_fn=collate_fn)
+    train_dataset = TrainDataset(train_X, train_Y, train_batch_instance_size, args.addnegative, args.join)
+    valid_dataset = TrainDataset(valid_X, valid_Y, valid_batch_instance_size, args.addnegative, args.join)
 
-    train_dataloader = data.DataLoader(train_dataset, batch_size = 1, shuffle = True)
-    valid_dataloader = data.DataLoader(valid_dataset, batch_size = 1, shuffle = True)
+    train_dataloader = data.DataLoader(train_dataset, batch_size = 1, shuffle = True, collate_fn=collate_fn)
+    valid_dataloader = data.DataLoader(valid_dataset, batch_size = 1, shuffle = True, collate_fn=collate_fn)
 
     criterion = nn.NLLLoss(reduction='mean').to(device)
     m = nn.LogSoftmax(dim=1).to(device)
