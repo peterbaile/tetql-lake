@@ -217,7 +217,7 @@ if __name__ == '__main__':
         # print(output.shape)
 
         num_instance = train_labels.shape[0]
-        num_tables = output.shape[0] / num_instance
+        num_tables = int(output.shape[0] / num_instance)
 
         output = output.reshape((num_instance, num_tables))
         # output = m(output)
@@ -250,7 +250,7 @@ if __name__ == '__main__':
 
           output = model(input_id, mask)
           num_instance = valid_labels.shape[0]
-          num_tables = output.shape[0] / num_instance
+          num_tables = int(output.shape[0] / num_instance)
 
           output = output.reshape((num_instance, num_tables))
 
