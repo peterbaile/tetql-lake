@@ -319,7 +319,7 @@ if __name__ == '__main__':
       else:
         dev_df = dev_df[2*cut*dev_batch_size:]
 
-    dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, 1]
+    dev_X, dev_Y = dev_df.iloc[:, 0], dev_df.iloc[:, -1]
     dev_dataset = DevDataset(dev_X, dev_Y)
     dev_dataloader = data.DataLoader(dev_dataset, batch_size = dev_batch_size)
 
