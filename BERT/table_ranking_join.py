@@ -305,7 +305,7 @@ if __name__ == '__main__':
   elif args.mode == 'dev':
     print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}')
     model = torch.load(MODEL_PATH)
-    dev_batch_size = 876 # this has to be the same as the number of candidates picked (876 no join, 100 idf)
+    dev_batch_size = 2 # this has to be the same as the number of candidates picked (876 no join, 100 idf)
 
     dev_df = pd.read_csv(f'./data/dev/{args.devfile}_ranking.csv')
 
