@@ -201,6 +201,7 @@ if __name__ == '__main__':
       t_model.train()
       for q_batch_mask, q_batch_input_id, t_batch_mask, t_batch_input_id, train_labels in tqdm(train_dataloader):
         # print(train_labels)
+        train_labels = train_labels.to(device)
         q_mask = q_batch_mask.to(device)
         q_input_id = q_batch_input_id.to(device)
 
@@ -232,6 +233,7 @@ if __name__ == '__main__':
       t_model.eval()
       with torch.no_grad():
         for q_batch_mask, q_batch_input_id, t_batch_mask, t_batch_input_id, valid_labels in tqdm(valid_dataloader):
+          valid_labels = valid_labels.to(device)
           q_mask = q_batch_mask.to(device)
           q_input_id = q_batch_input_id.to(device)
 
