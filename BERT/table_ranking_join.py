@@ -162,6 +162,7 @@ if __name__ == '__main__':
   parser.add_argument('--devpart', type=int)
   parser.add_argument('--addnegative', type=bool, default=False)
   parser.add_argument('--join', type=bool, default=False)
+  parser.add_argument('--rerank', type=bool, default=False)
   parser.add_argument('--topk', type=int)
 
   args = parser.parse_args()
@@ -303,7 +304,7 @@ if __name__ == '__main__':
         patience_cnt = 0
 
   elif args.mode == 'dev':
-    print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}')
+    print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
     model = torch.load(MODEL_PATH)
     dev_batch_size = 876 # this has to be the same as the number of candidates picked (876 no join, 100 idf)
 
@@ -329,6 +330,8 @@ if __name__ == '__main__':
 
     m = nn.LogSoftmax(dim=1).to(device)
 
+    i = 0
+
     model.eval()
     with torch.no_grad():
       for test_input, test_label in tqdm(dev_dataloader):
@@ -344,8 +347,15 @@ if __name__ == '__main__':
 
         output = [0 for _ in range(dev_batch_size)]
 
-        for max_idx in max_indices:
-          output[max_idx] = 1
+        if args.rerank:
+          max_idx = torch.argmax(raw_output).item()
+          max_db_id = dev_df.iloc(i * dev_batch_size + max_idx)['db_id']
+
+        for max_i in max_indices:
+          if args.rerank and dev_df.iloc(i * dev_batch_size + max_i)['db_id'] == max_db_id:
+              output[max_i] = 1
+          else:
+            output[max_i] = 1
 
         if total_output is None:
           total_output = output
@@ -353,6 +363,8 @@ if __name__ == '__main__':
         else:
           total_output += output
           # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
+    
+        i += 1
 
     print(f'accuracy: {accuracy_score(dev_Y, total_output):.5f}')
     print(f'precision: {precision_score(dev_Y, total_output):.5f}')
