@@ -1,5 +1,6 @@
 # two BERT models fed into a linear layer to get the final similarity score
 
+from sklearn.model_selection import train_test_split
 from transformers import AutoModel, AutoTokenizer, file_utils
 from torch.utils import data
 import torch
