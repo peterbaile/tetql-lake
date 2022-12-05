@@ -18,14 +18,14 @@ random.seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
+MODEL_TYPE = 'roberta-base'
+
 EMBED_SIZE = {
   'bert-tiny': 128,
   'bert-base-uncased': 768,
   'roberta-base': 768,
   'roberta-large': 1024
 }
-
-MODEL_TYPE = 'roberta-base'
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_TYPE)
 
@@ -148,11 +148,12 @@ if __name__ == '__main__':
   parser.add_argument('--devfile', type=str)
   parser.add_argument('--devpart', type=int)
   parser.add_argument('--addnegative', type=bool, default=False)
+  parser.add_argument('--join', type=bool, default=False)
   parser.add_argument('--topk', type=int)
 
   args = parser.parse_args()
 
-  print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}')
+  print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}, join: {args.join}')
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
