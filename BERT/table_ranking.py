@@ -128,7 +128,7 @@ if __name__ == '__main__':
   parser.add_argument('--path', type=str)
   parser.add_argument('--devfile', type=str)
   parser.add_argument('--devpart', type=int)
-  parser.add_argument('--addnegative', type=bool)
+  parser.add_argument('--addnegative', type=bool, default=False)
   parser.add_argument('--topk', type=int)
 
   args = parser.parse_args()
