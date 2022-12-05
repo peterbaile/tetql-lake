@@ -349,10 +349,10 @@ if __name__ == '__main__':
 
         if args.rerank:
           max_idx = torch.argmax(raw_output).item()
-          max_db_id = dev_df.iloc(i * dev_batch_size + max_idx)['db_id']
+          max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
 
         for max_i in max_indices:
-          if args.rerank and dev_df.iloc(i * dev_batch_size + max_i)['db_id'] == max_db_id:
+          if args.rerank and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
               output[max_i] = 1
           else:
             output[max_i] = 1
