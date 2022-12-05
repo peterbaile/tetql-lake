@@ -171,7 +171,7 @@ if __name__ == '__main__':
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
-  MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
+  MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-no-db-id', args, '-', '.pt')
 
   print(MODEL_TYPE, MODEL_PATH)
 
