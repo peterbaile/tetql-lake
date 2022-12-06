@@ -153,7 +153,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}, join: {args.join}')
-  learning_rate = 1e-6 # 1e-5 or 1e-6
+  learning_rate = 2e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
   Q_MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-q', args, '-', '.pt')
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
-    train_batch_instance_size = 10
+    train_batch_instance_size = 20
     valid_batch_instance_size = 20
     q_model = BertClassifier().to(device)
     t_model = BertClassifier().to(device)
