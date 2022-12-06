@@ -301,10 +301,24 @@ if __name__ == '__main__':
     t_model.eval()
 
     # get the embeddings for all tables
-    table_texts = [tokenize(text) for text in dev_t_df.iloc[:, 0]]
-    table_mask = table_texts['attention_mask'].to(device)
-    table_input_id = table_texts['input_ids'].squeeze(1).to(device)
+    print(f'tokenizing table texts')
+    table_texts = [tokenize(text) for text in tqdm(dev_t_df.iloc[:, 0])]
+
+    table_mask = None
+    table_input_id = None
+    for i, r in enumerate(table_texts):
+      if table_mask is None:
+        t_batch_mask = r['attention_mask'].unsqueeze(0)
+        table_input_id = r['input_ids']
+      else:
+        table_mask = torch.vstack((table_mask, r['attention_mask'].unsqueeze(0)))
+        table_input_id = torch.vstack((table_input_id, r['input_ids']))
+
+    table_mask = table_mask.to(device)
+    table_input_id = table_input_id.to(device)
     t_output = t_model(table_input_id, table_mask)
+
+    assert(t_output.shape[0] == num_tables)
 
     with torch.no_grad():
       for i, q_input in enumerate(tqdm(dev_dataloader)):
