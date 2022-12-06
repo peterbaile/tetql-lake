@@ -171,7 +171,7 @@ if __name__ == '__main__':
   learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
-  MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-no-db-id', args, '-', '.pt')
+  MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
 
   print(MODEL_TYPE, MODEL_PATH)
 
@@ -351,7 +351,7 @@ if __name__ == '__main__':
           max_idx = torch.argmax(raw_output).item()
           max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
         
-        db_id_set = set()
+        # db_id_set = set()
 
         for max_i in max_indices:
           if args.rerank and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
@@ -359,9 +359,9 @@ if __name__ == '__main__':
           else:
             output[max_i] = 1
           
-          db_id_set.add(dev_df.iloc[i * dev_batch_size + max_i]['db_id'])
+          # db_id_set.add(dev_df.iloc[i * dev_batch_size + max_i]['db_id'])
         
-        assert(len(db_id_set) == 1)
+        # assert(len(db_id_set) == 1)
 
         if total_output is None:
           total_output = output
