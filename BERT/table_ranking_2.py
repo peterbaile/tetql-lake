@@ -148,11 +148,12 @@ if __name__ == '__main__':
   parser.add_argument('--addnegative', type=bool, default=False)
   parser.add_argument('--join', type=bool, default=False)
   parser.add_argument('--topk', type=int)
+  parser.add_argument('--rerank', type=bool, default=False)
 
   args = parser.parse_args()
 
   print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}, join: {args.join}')
-  learning_rate = 1e-5 # 1e-5 or 1e-6
+  learning_rate = 1e-6 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
   Q_MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-q', args, '-', '.pt')
