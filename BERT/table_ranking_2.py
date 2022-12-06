@@ -13,6 +13,7 @@ import numpy as np
 import random
 import argparse
 import math
+import json
 
 random.seed(0)
 torch.manual_seed(0)
@@ -107,18 +108,15 @@ class TrainDataset(data.Dataset):
   def __len__(self):
     return math.ceil(len(self.questions) / self.num_instance)
 
-# TODO: need to be rewritten
-# class DevDataset(data.Dataset):
-#   def __init__(self, texts, labels):
-#     print('tokenizing texts')
-#     self.texts = [tokenize(text) for text in tqdm(texts)]
-#     self.labels = torch.tensor(labels.values)
+class DevDataset(data.Dataset):
+  def __init__(self, texts):
+    self.texts = [tokenize(text) for text in texts]
   
-#   def __getitem__(self, index):
-#     return self.texts[index], self.labels[index]
+  def __getitem__(self, index):
+    return self.texts[index]
 
-#   def __len__(self):
-#     return len(self.texts)
+  def __len__(self):
+    return len(self.texts)
 
 def suffix(base, args, connector, ext):
   new_base = base
@@ -280,3 +278,71 @@ if __name__ == '__main__':
         print(f'model saved')
         best_valid_loss = valid_loss
         patience_cnt = 0
+  elif args.mode == 'dev':
+    print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
+    q_model = torch.load(Q_MODEL_PATH)
+    t_model = torch.load(T_MODEL_PATH)
+    dev_batch_size = 500
+
+    dev_q_df = pd.read_csv(f'./data/dev/{args.devfile}_q_ranking.csv')
+    dev_t_df = pd.read_csv(f'./data/dev/{args.devfile}_t_ranking.csv')
+    num_tables = dev_t_df.shape[0]
+
+    dev_X, dev_Y = dev_q_df.iloc[:, 0], dev_q_df.iloc[:, -1]
+
+    dev_dataset = DevDataset(dev_X)
+    dev_dataloader = data.DataLoader(dev_dataset, batch_size=dev_batch_size, shuffle=False)
+
+    pred = None
+    label = None
+    
+    q_model.eval()
+    t_model.eval()
+
+    # get the embeddings for all tables
+    table_texts = [tokenize(text) for text in dev_t_df.iloc[:, 0]]
+    table_mask = table_texts['attention_mask'].to(device)
+    table_input_id = table_texts['input_ids'].squeeze(1).to(device)
+    t_output = t_model(table_input_id, table_mask)
+
+    with torch.no_grad():
+      for i, q_input in enumerate(tqdm(dev_dataloader)):
+        q_mask = q_input['attention_mask'].to(device)
+        q_input_id = q_input['input_ids'].squeeze(1).to(device)
+
+        # print(mask.shape, input_id.shape, train_labels.shape)
+
+        q_output = q_model(q_input_id, q_mask)
+
+        # compute dot product (cartesian product) --> essentially just matrix multiplication
+        q_output = torch.matmul(q_output, t_output.T)
+        
+        for row in torch.topk(q_output, args.topk, dim=1, sorted=False)[1]:
+          pred_single = torch.zeros(num_tables)
+          pred_single[row] = 1
+
+          if pred is None:
+            pred = pred_single
+          else:
+            pred = torch.hstack((pred, pred_single))
+        
+        for j in range(i*dev_batch_size, (i+1)*dev_batch_size):
+          row = json.loads(dev_q_df.iloc[j]['label'])
+          
+          label_single = torch.zeros(num_tables)
+          label_single[row] = 1
+
+          if label is None:
+            label = label_single
+          else:
+            label = torch.hstack((label, label_single))
+    
+    print(f'accuracy: {100 * accuracy_score(label, pred):.5f}%')
+    print(f'precision: {100 * precision_score(label, pred):.5f}%')
+    print(f'recall: {100 * recall_score(label, pred):.5f}%')
+    print(f'f1: {100 * f1_score(label, pred):.5f}%')
+
+        
+
+          
+
