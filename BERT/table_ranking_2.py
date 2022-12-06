@@ -366,10 +366,10 @@ if __name__ == '__main__':
           else:
             label = torch.hstack((label, label_single))
     
-    print(f'accuracy: {100 * accuracy_score(label, pred):.5f}%')
-    print(f'precision: {100 * precision_score(label, pred):.5f}%')
-    print(f'recall: {100 * recall_score(label, pred):.5f}%')
-    print(f'f1: {100 * f1_score(label, pred):.5f}%')
+    print(f'accuracy: {100 * accuracy_score(label, pred):.3f}%')
+    print(f'precision: {100 * precision_score(label, pred):.3f}%')
+    print(f'recall: {100 * recall_score(label, pred):.3f}%')
+    print(f'f1: {100 * f1_score(label, pred):.3f}%')
 
         
 
