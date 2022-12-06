@@ -18,7 +18,7 @@ random.seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
-MODEL_TYPE = 'roberta-base'
+MODEL_TYPE = 'roberta-large'
 
 EMBED_SIZE = {
   'bert-tiny': 128,
@@ -169,8 +169,8 @@ if __name__ == '__main__':
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
-    train_batch_instance_size = 7
-    valid_batch_instance_size = 10
+    train_batch_instance_size = 10
+    valid_batch_instance_size = 20
     q_model = BertClassifier().to(device)
     t_model = BertClassifier().to(device)
     print('finished loading model')
@@ -215,6 +215,7 @@ if __name__ == '__main__':
 
         # compute dot product (cartesian product) --> essentially just matrix multiplication
         output = torch.matmul(q_output, t_output.T)
+        output = m(output)
 
         optimizer.zero_grad()
 
@@ -247,6 +248,7 @@ if __name__ == '__main__':
 
           # compute dot product (cartesian product) --> essentially just matrix multiplication
           output = torch.matmul(q_output, t_output.T)
+          output = m(output)
 
           loss = criterion(output, valid_labels.long())
 
