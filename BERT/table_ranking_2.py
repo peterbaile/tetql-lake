@@ -308,7 +308,7 @@ if __name__ == '__main__':
     table_mask = None
     table_input_id = None
 
-    step_size = 20
+    step_size = 10
     for i, r in enumerate(table_texts):
       if table_mask is None:
         table_mask = r['attention_mask'].unsqueeze(0)
