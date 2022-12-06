@@ -168,7 +168,7 @@ if __name__ == '__main__':
     train_X, train_Y = train_df.iloc[:, 0], train_df.iloc[:, 1]
     valid_X, valid_Y = valid_df.iloc[:, 0], valid_df.iloc[:, 1]
 
-    train_batch_instance_size = 20
+    train_batch_instance_size = 15
     valid_batch_instance_size = 20
     q_model = BertClassifier().to(device)
     t_model = BertClassifier().to(device)
