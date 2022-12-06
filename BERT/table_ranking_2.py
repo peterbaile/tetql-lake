@@ -154,11 +154,11 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   print(f'mode: {args.mode}, source path: {args.path}, add negative: {args.addnegative}, join: {args.join}')
-  learning_rate = 1e-6 # 1e-5 or 1e-6
+  learning_rate = 1e-5 # 1e-5 or 1e-6
   print(f'learning rate: {learning_rate}')
 
-  Q_MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-q', args, '-', '.pt')
-  T_MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-t', args, '-', '.pt')
+  Q_MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-q-lr5', args, '-', '.pt')
+  T_MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking-t-lr5', args, '-', '.pt')
 
   print(MODEL_TYPE, Q_MODEL_PATH, T_MODEL_PATH)
 
