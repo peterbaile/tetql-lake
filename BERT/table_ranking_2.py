@@ -335,6 +335,7 @@ if __name__ == '__main__':
           
           table_mask, table_input_id = None, None
 
+    print(t_output.shape, num_tables)
     assert(t_output.shape[0] == num_tables)
 
     with torch.no_grad():
