@@ -308,7 +308,7 @@ if __name__ == '__main__':
     table_input_id = None
     for i, r in enumerate(table_texts):
       if table_mask is None:
-        t_batch_mask = r['attention_mask'].unsqueeze(0)
+        table_mask = r['attention_mask'].unsqueeze(0)
         table_input_id = r['input_ids']
       else:
         table_mask = torch.vstack((table_mask, r['attention_mask'].unsqueeze(0)))
