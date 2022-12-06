@@ -8,6 +8,6 @@ conda activate
 
 # Run the script
 # python table_ranking.py --mode train --path train_spider
-python table_ranking2.py --mode train --path train_spider
+python table_ranking_2.py --mode train --path train_spider
 
-# python table_ranking_join.py --mode dev --path train_spider --devfile dev_join_2 --topk 2 --devpart -1
+# python table_ranking_join.py --mode dev --path train_spider --devfile dev --topk 1 --devpart -1
