@@ -283,10 +283,11 @@ if __name__ == '__main__':
     print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
     q_model = torch.load(Q_MODEL_PATH)
     t_model = torch.load(T_MODEL_PATH)
-    dev_batch_size = 500
+    dev_batch_size = 300
 
     dev_q_df = pd.read_csv(f'./data/dev/{args.devfile}_q_ranking.csv')
     dev_t_df = pd.read_csv(f'./data/dev/{args.devfile}_t_ranking.csv')
+    num_qs = dev_q_df.shape[0]
     num_tables = dev_t_df.shape[0]
 
     dev_X, dev_Y = dev_q_df.iloc[:, 0], dev_q_df.iloc[:, -1]
@@ -311,8 +312,6 @@ if __name__ == '__main__':
     table_mask = None
     table_input_id = None
 
-    # step_size = 10
-
     with torch.no_grad():
       for i, r in enumerate(table_texts):
         if table_mask is None:
@@ -330,7 +329,6 @@ if __name__ == '__main__':
       del table_mask
       del table_input_id
 
-    print(t_output.shape, num_tables)
     assert(t_output.shape[0] == num_tables)
 
     with torch.no_grad():
@@ -355,6 +353,9 @@ if __name__ == '__main__':
             pred = torch.hstack((pred, pred_single))
         
         for j in range(i*dev_batch_size, (i+1)*dev_batch_size):
+          if j >= num_qs:
+            break
+
           row = json.loads(dev_q_df.iloc[j]['label'])
           
           label_single = torch.zeros(num_tables)
