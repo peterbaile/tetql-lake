@@ -311,7 +311,7 @@ if __name__ == '__main__':
     table_mask = None
     table_input_id = None
 
-    step_size = 10
+    # step_size = 10
 
     with torch.no_grad():
       for i, r in enumerate(table_texts):
@@ -321,19 +321,14 @@ if __name__ == '__main__':
         else:
           table_mask = torch.vstack((table_mask, r['attention_mask'].unsqueeze(0)))
           table_input_id = torch.vstack((table_input_id, r['input_ids']))
-        
-        if table_mask.shape[0] == step_size:
-          table_mask = table_mask.to(device)
-          table_input_id = table_input_id.to(device)
 
-          batch_t_output = t_model(table_input_id, table_mask)
+      table_mask = table_mask.to(device)
+      table_input_id = table_input_id.to(device)
 
-          if t_output is None:
-            t_output = batch_t_output
-          else:
-            t_output = torch.vstack((t_output, batch_t_output))
-          
-          table_mask, table_input_id = None, None
+      t_output = t_model(table_input_id, table_mask)
+
+      del table_mask
+      del table_input_id
 
     print(t_output.shape, num_tables)
     assert(t_output.shape[0] == num_tables)
