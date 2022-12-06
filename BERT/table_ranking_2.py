@@ -283,7 +283,7 @@ if __name__ == '__main__':
     print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
     q_model = torch.load(Q_MODEL_PATH)
     t_model = torch.load(T_MODEL_PATH)
-    dev_batch_size = 500
+    dev_batch_size = 200
 
     dev_q_df = pd.read_csv(f'./data/dev/{args.devfile}_q_ranking.csv')
     dev_t_df = pd.read_csv(f'./data/dev/{args.devfile}_t_ranking.csv')
