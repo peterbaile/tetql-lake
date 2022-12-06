@@ -283,7 +283,7 @@ if __name__ == '__main__':
     print(f'dev partition: {args.devpart}, dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
     q_model = torch.load(Q_MODEL_PATH)
     t_model = torch.load(T_MODEL_PATH)
-    dev_batch_size = 200
+    dev_batch_size = 500
 
     dev_q_df = pd.read_csv(f'./data/dev/{args.devfile}_q_ranking.csv')
     dev_t_df = pd.read_csv(f'./data/dev/{args.devfile}_t_ranking.csv')
@@ -304,8 +304,11 @@ if __name__ == '__main__':
     print(f'tokenizing table texts')
     table_texts = [tokenize(text) for text in tqdm(dev_t_df.iloc[:, 0])]
 
+    t_output = None
     table_mask = None
     table_input_id = None
+
+    step_size = 20
     for i, r in enumerate(table_texts):
       if table_mask is None:
         table_mask = r['attention_mask'].unsqueeze(0)
@@ -313,10 +316,19 @@ if __name__ == '__main__':
       else:
         table_mask = torch.vstack((table_mask, r['attention_mask'].unsqueeze(0)))
         table_input_id = torch.vstack((table_input_id, r['input_ids']))
+      
+      if table_mask.shape[0] == step_size:
+        table_mask = table_mask.to(device)
+        table_input_id = table_input_id.to(device)
 
-    table_mask = table_mask.to(device)
-    table_input_id = table_input_id.to(device)
-    t_output = t_model(table_input_id, table_mask)
+        batch_t_output = t_model(table_input_id, table_mask)
+
+        if t_output is None:
+          t_output = batch_t_output
+        else:
+          t_output = torch.vstack((t_output, batch_t_output))
+        
+        table_mask, table_input_id = None, None
 
     assert(t_output.shape[0] == num_tables)
 
