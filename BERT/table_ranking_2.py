@@ -294,6 +294,9 @@ if __name__ == '__main__':
     dev_dataset = DevDataset(dev_X)
     dev_dataloader = data.DataLoader(dev_dataset, batch_size=dev_batch_size, shuffle=False)
 
+    # t_dev_dataset = DevDataset(dev_t_df['table'])
+    # t_dev_dataloader = data.Dataloader(t_dev_dataset, batch_size=20, shuffle=False)
+
     pred = None
     label = None
     
@@ -302,33 +305,35 @@ if __name__ == '__main__':
 
     # get the embeddings for all tables
     print(f'tokenizing table texts')
-    table_texts = [tokenize(text) for text in tqdm(dev_t_df.iloc[:, 0])]
+    table_texts = [tokenize(text) for text in tqdm(dev_t_df['table'])]
 
     t_output = None
     table_mask = None
     table_input_id = None
 
     step_size = 10
-    for i, r in enumerate(table_texts):
-      if table_mask is None:
-        table_mask = r['attention_mask'].unsqueeze(0)
-        table_input_id = r['input_ids']
-      else:
-        table_mask = torch.vstack((table_mask, r['attention_mask'].unsqueeze(0)))
-        table_input_id = torch.vstack((table_input_id, r['input_ids']))
-      
-      if table_mask.shape[0] == step_size:
-        table_mask = table_mask.to(device)
-        table_input_id = table_input_id.to(device)
 
-        batch_t_output = t_model(table_input_id, table_mask)
-
-        if t_output is None:
-          t_output = batch_t_output
+    with torch.no_grad():
+      for i, r in enumerate(table_texts):
+        if table_mask is None:
+          table_mask = r['attention_mask'].unsqueeze(0)
+          table_input_id = r['input_ids']
         else:
-          t_output = torch.vstack((t_output, batch_t_output))
+          table_mask = torch.vstack((table_mask, r['attention_mask'].unsqueeze(0)))
+          table_input_id = torch.vstack((table_input_id, r['input_ids']))
         
-        table_mask, table_input_id = None, None
+        if table_mask.shape[0] == step_size:
+          table_mask = table_mask.to(device)
+          table_input_id = table_input_id.to(device)
+
+          batch_t_output = t_model(table_input_id, table_mask)
+
+          if t_output is None:
+            t_output = batch_t_output
+          else:
+            t_output = torch.vstack((t_output, batch_t_output))
+          
+          table_mask, table_input_id = None, None
 
     assert(t_output.shape[0] == num_tables)
 
