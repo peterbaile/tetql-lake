@@ -14,6 +14,8 @@ import random
 import argparse
 import math
 import json
+from os.path import exists
+import sys
 
 random.seed(0)
 torch.manual_seed(0)
@@ -79,6 +81,9 @@ def collate_fn(batch):
 
 device = 'cuda'
 
+def evaluate(CANDS_PATH):
+  return
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
 
@@ -90,7 +95,13 @@ if __name__ == '__main__':
   parser.add_argument('--rerank', type=bool, default=False)
 
   args = parser.parse_args()
-  
+
+  CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
+
+  if exists(CANDS_PATH):
+    evaluate(CANDS_PATH)
+    sys.exit(0)
+
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
   print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
 
@@ -156,7 +167,7 @@ if __name__ == '__main__':
   print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}')
   
   cands_dev_df = dev_df.iloc[total_max_indices]
-  cands_dev_df.to_csv(f'{args.devfile}_ranking_cands.csv', index=False)
+  cands_dev_df.to_csv(CANDS_PATH, index=False)
   
   num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
   assert(num_q == cands_dev_df.shape[0])
