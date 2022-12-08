@@ -115,7 +115,7 @@ if __name__ == '__main__':
       
       _, max_indices = torch.topk(raw_output, args.topk)
       max_indices = max_indices.tolist()
-      # print(max_idx)
+      print(max_indices)
 
       output = [0 for _ in range(dev_batch_size)]
 
