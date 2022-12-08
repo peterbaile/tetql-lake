@@ -155,6 +155,10 @@ if __name__ == '__main__':
   print(f'recall: {100 * recall_score(dev_Y, total_output):.3f}')
   print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}')
   
-  cands_dev_df = dev_df.iloc[total_output]
+  cands_dev_df = dev_df.iloc[total_max_indices]
   cands_dev_df.to_csv(f'{args.devfile}_ranking_cands.csv', index=False)
-  print(f'cands shape {cands_dev_df.shape}')
+  
+  num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
+  assert(num_q == cands_dev_df.shape[0])
+
+  print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
