@@ -79,7 +79,6 @@ device = 'cuda'
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
 
-  parser.add_argument('--mode', type=str)
   parser.add_argument('--path', type=str)
   parser.add_argument('--devfile', type=str)
   parser.add_argument('--addnegative', type=bool, default=False)
@@ -88,9 +87,9 @@ if __name__ == '__main__':
   parser.add_argument('--rerank', type=bool, default=False)
 
   args = parser.parse_args()
-
+  
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
-  print(MODEL_TYPE, MODEL_PATH)
+  print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
 
   print(f'dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
   model = torch.load(MODEL_PATH)
