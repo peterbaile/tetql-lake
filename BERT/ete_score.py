@@ -38,13 +38,16 @@ class BertClassifier(nn.Module):
     super(BertClassifier, self).__init__()
 
     self.bert = AutoModel.from_pretrained(MODEL_TYPE)
+    # self.bert.resize_token_embeddings(len(tokenizer))
     self.dropout = nn.Dropout(dropout)
+    self.linear = nn.Linear(EMBED_SIZE[MODEL_TYPE], 1)
 
   def forward(self, input_id, mask):
     _, pooled_output = self.bert(input_ids=input_id, attention_mask=mask, return_dict=False)
     dropout_output = self.dropout(pooled_output)
+    linear_output = self.linear(dropout_output)
 
-    return dropout_output
+    return linear_output
 
 class DevDataset(data.Dataset):
   def __init__(self, texts, labels):
@@ -110,10 +113,8 @@ if __name__ == '__main__':
       test_label = test_label.to(device)
       mask = test_input['attention_mask'].to(device)
       input_id = test_input['input_ids'].squeeze(1).to(device)
-      print(mask.shape, input_id.shape)
 
       raw_output = model(input_id, mask).squeeze(1)
-      print(raw_output.shape)
       
       _, max_indices = torch.topk(raw_output, args.topk)
       max_indices = max_indices.tolist()
