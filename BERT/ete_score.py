@@ -110,12 +110,13 @@ if __name__ == '__main__':
       test_label = test_label.to(device)
       mask = test_input['attention_mask'].to(device)
       input_id = test_input['input_ids'].squeeze(1).to(device)
+      print(mask.shape, input_id.shape)
 
       raw_output = model(input_id, mask).squeeze(1)
+      print(raw_output.shape)
       
       _, max_indices = torch.topk(raw_output, args.topk)
       max_indices = max_indices.tolist()
-      print(max_indices)
 
       output = [0 for _ in range(dev_batch_size)]
 
