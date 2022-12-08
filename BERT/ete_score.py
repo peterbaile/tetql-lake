@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
   model.eval()
   with torch.no_grad():
-    for i, test_input, test_label in enumerate(tqdm(dev_dataloader)):
+    for i, (test_input, test_label) in enumerate(tqdm(dev_dataloader)):
       test_label = test_label.to(device)
       mask = test_input['attention_mask'].to(device)
       input_id = test_input['input_ids'].squeeze(1).to(device)
