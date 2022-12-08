@@ -155,3 +155,4 @@ if __name__ == '__main__':
   
   cands_dev_df = dev_df.iloc[total_output]
   cands_dev_df.to_csv(f'{args.devfile}_ranking_cands.csv', index=False)
+  print(f'cands shape {cands_dev_df.shape}')
