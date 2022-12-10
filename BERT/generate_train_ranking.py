@@ -18,7 +18,7 @@ def generate_samples(q_idx_ls, q_data, neg_data, dbs_tables, dbs_table_names, db
 
     for q_table_idx in q_table_labels:
       cols = ','.join(dbs[(q_db_id, q_table_idx)])
-      tbl_text = f'{dbs_table_names[q_db_id][q_table_idx]},{cols}'
+      tbl_text = f'{q_db_id},{dbs_table_names[q_db_id][q_table_idx]},{cols}'
 
       tbl_texts.append(tbl_text)
 
@@ -75,8 +75,8 @@ if __name__ == '__main__':
   db_q = {}
 
   for idx, q in enumerate(q_data):
-    # if len(q['table_labels']) >= 2:
-    #   continue
+    if len(q['table_labels']) >= 2:
+      continue
   
     q_db_id = q['db_id'].lower()
     if q_db_id not in db_q_count:
@@ -120,5 +120,5 @@ if __name__ == '__main__':
   train_df = pd.DataFrame(train_data, columns=['question', 'table'])
   valid_df = pd.DataFrame(valid_data, columns=['question', 'table'])
 
-  train_df.to_csv('./data/train_spider/train_ranking_join.csv', index=False)
-  valid_df.to_csv('./data/train_spider/valid_ranking_join.csv', index=False)
+  train_df.to_csv('./data/train_spider/train_ranking.csv', index=False)
+  valid_df.to_csv('./data/train_spider/valid_ranking.csv', index=False)

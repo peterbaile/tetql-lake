@@ -82,6 +82,7 @@ def collate_fn(batch):
 device = 'cuda'
 
 def evaluate(CANDS_PATH):
+  
   return
 
 if __name__ == '__main__':

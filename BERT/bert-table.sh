@@ -10,4 +10,4 @@ conda activate
 # python table_ranking.py --mode train --path train_spider
 python table_ranking_2.py --mode train --path train_spider
 
-# python table_ranking_join.py --mode dev --path train_spider --devfile dev --topk 1 --devpart -1
+# python ete_score.py --path train_spider --devfile dev_join_3 --topk 3
