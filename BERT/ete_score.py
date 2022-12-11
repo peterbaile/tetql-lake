@@ -16,6 +16,7 @@ import math
 import json
 from os.path import exists
 import sys
+from picard import generate_queries
 
 random.seed(0)
 torch.manual_seed(0)
@@ -82,8 +83,21 @@ def collate_fn(batch):
 device = 'cuda'
 
 def evaluate(CANDS_PATH):
+  cands_dev_df = pd.read_csv(CANDS_PATH)
+
+  # TODO: generate cands_dev_df
+
+
+  pred_queries, gold_queries = generate_queries(cands_dev_df)
+
   
-  return
+
+  with open('./data/eval/pred.txt', 'w') as f:
+    f.write('\n'.join(pred_queries))
+  
+  with open('./data/eval/gold.txt', 'w') as f:
+    f.write('\n'.join(gold_queries))
+
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -99,9 +113,9 @@ if __name__ == '__main__':
 
   CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
 
-  if exists(CANDS_PATH):
-    evaluate(CANDS_PATH)
-    sys.exit(0)
+  # if exists(CANDS_PATH):
+  #   evaluate(CANDS_PATH)
+  #   sys.exit(0)
 
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
   print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
