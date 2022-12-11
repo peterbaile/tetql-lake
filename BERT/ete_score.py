@@ -107,8 +107,8 @@ if __name__ == '__main__':
   parser.add_argument('--addnegative', type=bool, default=False)
   parser.add_argument('--join', type=bool, default=False)
   parser.add_argument('--topk', type=int)
-  parser.add_argument('--rerank', type=bool, default=False)
-  parser.add_argument('--topnum', type=int)
+  parser.add_argument('--rerank', type=bool, action='store_true')
+  parser.add_argument('--topnum', type=int, default=-1)
 
   args = parser.parse_args()
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
   print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
 
-  print(f'dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}')
+  print(f'dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}, top #cands {args.topnum}')
   model = torch.load(MODEL_PATH)
   dev_batch_size = 81 # this has to be the same as the number of candidates picked (81 no join, 100 idf)
 
