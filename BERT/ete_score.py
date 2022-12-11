@@ -108,6 +108,7 @@ if __name__ == '__main__':
   parser.add_argument('--join', type=bool, default=False)
   parser.add_argument('--topk', type=int)
   parser.add_argument('--rerank', type=bool, default=False)
+  parser.add_argument('--topnum', type=int)
 
   args = parser.parse_args()
 
@@ -142,7 +143,11 @@ if __name__ == '__main__':
 
       raw_output = model(input_id, mask).squeeze(1)
       
-      _, max_indices = torch.topk(raw_output, args.topk)
+      if args.rerank:
+        _, max_indices = torch.topk(raw_output, args.topnum)
+      else:
+        _, max_indices = torch.topk(raw_output, args.topk)
+
       max_indices = max_indices.tolist()
 
       output = [0 for _ in range(dev_batch_size)]
@@ -153,8 +158,10 @@ if __name__ == '__main__':
       
       # db_id_set = set()
 
+      num_tables = 0
       for max_i in max_indices:
-        if args.rerank and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
+        if args.rerank and num_tables < args.topk and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
+          num_tables += 1
           output[max_i] = 1
         else:
           output[max_i] = 1
