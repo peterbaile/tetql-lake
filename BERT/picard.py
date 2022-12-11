@@ -39,7 +39,7 @@ def generate_single(model, tokenizer, input_data: Tensor):
 def generate_string(q, db_id, tables, DB_TO_COLS):
   tables_string_ls = [DB_TO_COLS[db_id, table] for table in tables]
 
-  return f'{q} | {db_id} | {' | '.join(tables_string)}'
+  return f"{q} | {db_id} | {' | '.join(tables_string)}"
 
 def generate_queries(picard_cands_dict):
   device = 'cuda'
