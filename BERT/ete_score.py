@@ -190,7 +190,7 @@ if __name__ == '__main__':
             db_count[cand_db_id] = [1, max_i, [max_i]]
           else:
             db_count[cand_db_id][0] += 1
-            db_count[cand_db_id][1].append(max_i)
+            db_count[cand_db_id][2].append(max_i)
           # if num_tables < args.topk and cand_db_id == max_db_id:
           #   num_tables += 1
           #   output[max_i] = 1
