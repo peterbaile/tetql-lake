@@ -201,7 +201,13 @@ if __name__ == '__main__':
         # db_id_set.add(dev_df.iloc[i * dev_batch_size + max_i]['db_id'])
       
       if args.rerank:
-        _, _, max_indices_reranked = sorted(db_count.items(), key=lambda item: (item[1][0], -item[1][1]), reverse=True)[0][1]
+        db_count = sorted(db_count.items(), key=lambda item: item[1][1], reverse=False)
+        i = 0
+        while db_count[i] < args.topk and i < len(db_count):
+          i += 1
+        _, _, max_indices_reranked = db_count[i][1]
+
+        # _, _, max_indices_reranked = sorted(db_count.items(), key=lambda item: (item[1][0], -item[1][1]), reverse=True)[0][1]
         max_indices_reranked = max_indices_reranked[:args.topk]
 
         for max_i in max_indices_reranked:
