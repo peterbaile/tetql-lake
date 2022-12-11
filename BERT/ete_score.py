@@ -177,7 +177,7 @@ if __name__ == '__main__':
       
       # db_id_set = set()
 
-      # db_count = {}
+      db_count = {}
 
       # if args.rerank:
       #   max_indices_reranked = []
