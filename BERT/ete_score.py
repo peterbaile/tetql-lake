@@ -152,9 +152,9 @@ if __name__ == '__main__':
 
       output = [0 for _ in range(dev_batch_size)]
 
-      # if args.rerank:
-      #   max_idx = torch.argmax(raw_output).item()
-      #   max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
+      if args.rerank:
+        max_idx = torch.argmax(raw_output).item()
+        max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
       
       # db_id_set = set()
 
@@ -164,25 +164,25 @@ if __name__ == '__main__':
       for max_i in max_indices:
         if args.rerank:
           cand_db_id = dev_df.iloc[i * dev_batch_size + max_i]['db_id']
-          if cand_db_id not in db_count:
-            db_count[cand_db_id] = [1, [max_i]]
-          else:
-            db_count[cand_db_id][0] += 1
-            db_count[cand_db_id][1].append(max_i)
-          # if num_tables < args.topk and  == max_db_id:
-          #   num_tables += 1
-          #   output[max_i] = 1
+          # if cand_db_id not in db_count:
+          #   db_count[cand_db_id] = [1, [max_i]]
+          # else:
+          #   db_count[cand_db_id][0] += 1
+          #   db_count[cand_db_id][1].append(max_i)
+          if num_tables < args.topk and cand_db_id == max_db_id:
+            num_tables += 1
+            output[max_i] = 1
         else:
           output[max_i] = 1
         
         # db_id_set.add(dev_df.iloc[i * dev_batch_size + max_i]['db_id'])
       
-      if args.rerank:
-        _, max_indices_reranked = sorted(db_count.items(), key=lambda item: item[1][0], reverse=True)[0][1]
-        max_indices_reranked = max_indices_reranked[:args.topk]
+      # if args.rerank:
+      #   _, max_indices_reranked = sorted(db_count.items(), key=lambda item: item[1][0], reverse=True)[0][1]
+      #   max_indices_reranked = max_indices_reranked[:args.topk]
 
-        for max_i in max_indices_reranked:
-          output[max_i] = 1
+      #   for max_i in max_indices_reranked:
+      #     output[max_i] = 1
       
       # assert(len(db_id_set) == 1)
 
@@ -193,15 +193,15 @@ if __name__ == '__main__':
         total_output += output
         # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
 
-      if args.rerank:
-        max_indices = [x + i * dev_batch_size for x in max_indices_reranked]
-      else:
-        max_indices = [x + i * dev_batch_size for x in max_indices]
+      # if args.rerank:
+      #   max_indices = [x + i * dev_batch_size for x in max_indices_reranked]
+      # else:
+      #   max_indices = [x + i * dev_batch_size for x in max_indices]
 
-      if total_max_indices is None:
-        total_max_indices = max_indices
-      else:
-        total_max_indices += max_indices
+      # if total_max_indices is None:
+      #   total_max_indices = max_indices
+      # else:
+      #   total_max_indices += max_indices
     
   print(f'accuracy: {100 * accuracy_score(dev_Y, total_output):.3f}%')
   print(f'precision: {100 * precision_score(dev_Y, total_output):.3f}%')
