@@ -184,10 +184,10 @@ if __name__ == '__main__':
       else:
         total_max_indices += max_indices
     
-  print(f'accuracy: {100 * accuracy_score(dev_Y, total_output):.3f}')
-  print(f'precision: {100 * precision_score(dev_Y, total_output):.3f}')
-  print(f'recall: {100 * recall_score(dev_Y, total_output):.3f}')
-  print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}')
+  print(f'accuracy: {100 * accuracy_score(dev_Y, total_output):.3f}%')
+  print(f'precision: {100 * precision_score(dev_Y, total_output):.3f}%')
+  print(f'recall: {100 * recall_score(dev_Y, total_output):.3f}%')
+  print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}%')
   
   cands_dev_df = dev_df.iloc[total_max_indices]
   cands_dev_df.to_csv(CANDS_PATH, index=False)
