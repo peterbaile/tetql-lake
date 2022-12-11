@@ -187,9 +187,8 @@ if __name__ == '__main__':
         if args.rerank:
           cand_db_id = dev_df.iloc[i * dev_batch_size + max_i]['db_id']
           if cand_db_id not in db_count:
-            db_count[cand_db_id] = [1, pos, [max_i]]
+            db_count[cand_db_id] = [pos, [max_i]]
           else:
-            db_count[cand_db_id][0] += 1
             db_count[cand_db_id][2].append(max_i)
           # if num_tables < args.topk and cand_db_id == max_db_id:
           #   num_tables += 1
@@ -201,11 +200,11 @@ if __name__ == '__main__':
         # db_id_set.add(dev_df.iloc[i * dev_batch_size + max_i]['db_id'])
       
       if args.rerank:
-        db_count = sorted(db_count.items(), key=lambda item: item[1][1], reverse=False)
+        db_count = sorted(db_count.items(), key=lambda item: item[1][0], reverse=False)
         i = 0
-        while db_count[i] < args.topk and i < len(db_count):
+        while len(db_count[i][1][1]) < args.topk and i < len(db_count):
           i += 1
-        _, _, max_indices_reranked = db_count[i][1]
+        _, max_indices_reranked = db_count[i][1]
 
         # _, _, max_indices_reranked = sorted(db_count.items(), key=lambda item: (item[1][0], -item[1][1]), reverse=True)[0][1]
         max_indices_reranked = max_indices_reranked[:args.topk]
