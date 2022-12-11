@@ -16,7 +16,7 @@ import math
 import json
 from os.path import exists
 import sys
-from picard import generate_queries
+# from picard import generate_queries
 
 random.seed(0)
 torch.manual_seed(0)
