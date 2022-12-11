@@ -160,9 +160,10 @@ if __name__ == '__main__':
 
       num_tables = 0
       for max_i in max_indices:
-        if args.rerank and num_tables < args.topk and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
-          num_tables += 1
-          output[max_i] = 1
+        if args.rerank:
+          if num_tables < args.topk and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
+            num_tables += 1
+            output[max_i] = 1
         else:
           output[max_i] = 1
         
