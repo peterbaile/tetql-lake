@@ -107,7 +107,7 @@ if __name__ == '__main__':
   parser.add_argument('--addnegative', type=bool, default=False)
   parser.add_argument('--join', type=bool, default=False)
   parser.add_argument('--topk', type=int)
-  parser.add_argument('--rerank', type=bool, action='store_true')
+  parser.add_argument('--rerank', action='store_true')
   parser.add_argument('--topnum', type=int, default=-1)
 
   args = parser.parse_args()
