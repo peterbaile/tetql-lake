@@ -180,8 +180,6 @@ if __name__ == '__main__':
       if args.rerank:
         _, max_indices_reranked = sorted(db_count.items(), key=lambda item: item[1][0], reverse=True)[0][1]
 
-        print(max_indices_reranked)
-
         for max_i in max_indices_reranked:
           output[max_i] = 1
       
