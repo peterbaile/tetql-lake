@@ -16,7 +16,7 @@ import math
 import json
 from os.path import exists
 import sys
-# from picard import generate_queries
+from picard import generate_queries
 
 random.seed(0)
 torch.manual_seed(0)
@@ -85,12 +85,31 @@ device = 'cuda'
 def evaluate(CANDS_PATH):
   cands_dev_df = pd.read_csv(CANDS_PATH)
 
-  # TODO: generate cands_dev_df
-
-
-  pred_queries, gold_queries = generate_queries(cands_dev_df)
-
+  with open('../spider_data/dev_new.json', 'r') as f:
+    q_data = json.load(f)
   
+  gold_sql_dict = {}
+
+  for q in q_data:
+    gold_sql_dict[q['question']] = q['query']
+
+  picard_cands_dict = {}
+
+  for row in cands_dev_df:
+    q = row.split['[SEP]'][0][:-1]
+    q_db_id = row['db_id']
+    q_tbl_idx = row['table_index']
+
+    if q not in picard_cands_dict:
+      picard_cands_dict[q] = [q_db_id, [q_tbl_idx], gold_sql_dict[q]]
+    else:
+      picard_cands_dict[q][1].append(q_tbl_idx)
+  
+  # df = pd.DataFrame(all_data, columns=['text', 'db_id', 'table_index', 'label'])
+
+  # df.to_csv(f'./data/dev/{args.filename}_ranking.csv', index=False)
+
+  pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
   with open('./data/eval/pred.txt', 'w') as f:
     f.write('\n'.join(pred_queries))
