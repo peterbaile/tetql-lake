@@ -152,9 +152,9 @@ if __name__ == '__main__':
 
       output = [0 for _ in range(dev_batch_size)]
 
-      if args.rerank:
-        max_idx = torch.argmax(raw_output).item()
-        max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
+      # if args.rerank:
+      #   max_idx = torch.argmax(raw_output).item()
+      #   max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
       
       # db_id_set = set()
 
@@ -193,7 +193,11 @@ if __name__ == '__main__':
         total_output += output
         # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
 
-      max_indices = [x + i * dev_batch_size for x in max_indices]
+      if args.rerank:
+        max_indices = [x + i * dev_batch_size for x in max_indices_reranked]
+      else:
+        max_indices = [x + i * dev_batch_size for x in max_indices]
+
       if total_max_indices is None:
         total_max_indices = max_indices
       else:
