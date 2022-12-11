@@ -165,7 +165,7 @@ if __name__ == '__main__':
         if args.rerank:
           cand_db_id = dev_df.iloc[i * dev_batch_size + max_i]['db_id']
           if cand_db_id not in db_count:
-            db_count[cand_db_id] = (1, [max_i])
+            db_count[cand_db_id] = [1, [max_i]]
           else:
             db_count[cand_db_id][0] += 1
             db_count[cand_db_id][1].append(max_i)
