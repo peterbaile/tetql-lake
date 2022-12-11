@@ -158,16 +158,30 @@ if __name__ == '__main__':
       
       # db_id_set = set()
 
+      db_count = {}
+
       num_tables = 0
       for max_i in max_indices:
         if args.rerank:
-          if num_tables < args.topk and dev_df.iloc[i * dev_batch_size + max_i]['db_id'] == max_db_id:
-            num_tables += 1
-            output[max_i] = 1
+          cand_db_id = dev_df.iloc[i * dev_batch_size + max_i]['db_id']
+          if cand_db_id not in db_count:
+            db_count[cand_db_id] = (1, [max_i])
+          else:
+            db_count[cand_db_id][0] += 1
+            db_count[cand_db_id][1].append(max_i)
+          # if num_tables < args.topk and  == max_db_id:
+          #   num_tables += 1
+          #   output[max_i] = 1
         else:
           output[max_i] = 1
         
         # db_id_set.add(dev_df.iloc[i * dev_batch_size + max_i]['db_id'])
+      
+      if args.rerank:
+        max_indices_reranked = sorted(db_count.items(), key=lambda item: item[1][0])[0]
+
+        for max_i in max_indices_reranked:
+          output[max_i] = 1
       
       # assert(len(db_id_set) == 1)
 
@@ -193,6 +207,8 @@ if __name__ == '__main__':
   cands_dev_df.to_csv(CANDS_PATH, index=False)
   
   num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
+  print(f'expected size {num_q}, actual size {cands_dev_df.shape[0]}')
+
   assert(num_q == cands_dev_df.shape[0])
 
   print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
