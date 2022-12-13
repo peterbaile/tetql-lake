@@ -4,6 +4,7 @@ import torch
 from torch import Tensor
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from tqdm import tqdm
+import json
 
 
 def load_picard_model(name="tscholak-3vnuv1vf"):
