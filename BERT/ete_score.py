@@ -91,7 +91,7 @@ def evaluate(dev_filename, CANDS_PATH):
   gold_sql_dict = {}
 
   for q in q_data:
-    gold_sql_dict[q['question']] = q['query']
+    gold_sql_dict[q['question']] = f"{q['query']}\t{q['db_id']}"
 
   picard_cands_dict = {}
 
