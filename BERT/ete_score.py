@@ -171,9 +171,9 @@ if __name__ == '__main__':
 
       output = [0 for _ in range(dev_batch_size)]
 
-      if args.rerank:
-        max_idx = torch.argmax(raw_output).item()
-        max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
+      # if args.rerank:
+      #   max_idx = torch.argmax(raw_output).item()
+      #   max_db_id = dev_df.iloc[i * dev_batch_size + max_idx]['db_id']
       
       # db_id_set = set()
 
@@ -235,13 +235,17 @@ if __name__ == '__main__':
   print(f'precision: {100 * precision_score(dev_Y, total_output):.3f}%')
   print(f'recall: {100 * recall_score(dev_Y, total_output):.3f}%')
   print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}%')
-  
-  cands_dev_df = dev_df.iloc[total_max_indices]
-  cands_dev_df.to_csv(CANDS_PATH, index=False)
-  
-  num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
-  print(f'expected size {num_q}, actual size {cands_dev_df.shape[0]}')
 
-  assert(num_q == cands_dev_df.shape[0])
+  print(total_max_indices)
+  
+  # cands_dev_df = dev_df.iloc[total_max_indices]
+  # cands_dev_df.to_csv(CANDS_PATH, index=False)
 
-  print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
+  
+  
+  # num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
+  # print(f'expected size {num_q}, actual size {cands_dev_df.shape[0]}')
+
+  # assert(num_q == cands_dev_df.shape[0])
+
+  # print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
