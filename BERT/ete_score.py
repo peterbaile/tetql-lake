@@ -103,7 +103,7 @@ def evaluate(CANDS_PATH):
     if q not in picard_cands_dict:
       picard_cands_dict[q] = [q_db_id, gold_sql_dict[q], [q_tbl_idx]]
     else:
-      picard_cands_dict[q][1].append(q_tbl_idx)
+      picard_cands_dict[q][2].append(q_tbl_idx)
   
   # df = pd.DataFrame(all_data, columns=['text', 'db_id', 'table_index', 'label'])
 
