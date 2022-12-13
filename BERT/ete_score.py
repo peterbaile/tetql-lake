@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
   model.eval()
   with torch.no_grad():
-    for i, (test_input, test_label) in enumerate(tqdm(dev_dataloader)):
+    for batch_idx, (test_input, test_label) in enumerate(tqdm(dev_dataloader)):
       test_label = test_label.to(device)
       mask = test_input['attention_mask'].to(device)
       input_id = test_input['input_ids'].squeeze(1).to(device)
@@ -222,9 +222,9 @@ if __name__ == '__main__':
         # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
 
       if args.rerank:
-        max_indices = [x + i * dev_batch_size for x in max_indices_reranked]
+        max_indices = [x + batch_idx * dev_batch_size for x in max_indices_reranked]
       else:
-        max_indices = [x + i * dev_batch_size for x in max_indices]
+        max_indices = [x + batch_idx * dev_batch_size for x in max_indices]
 
       if total_max_indices is None:
         total_max_indices = max_indices
