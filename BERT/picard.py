@@ -45,8 +45,8 @@ def generate_string(q, db_id, tables, DB_TO_COLS):
 def generate_queries(picard_cands_dict):
   device = 'cuda'
   print(f'loading model')
-  tokenizer, model = load_picard_model()
-  model = model.to(device)
+  # tokenizer, model = load_picard_model()
+  # model = model.to(device)
 
   pred_sql_queries = []
   gold_sql_queries = []
@@ -78,7 +78,7 @@ def generate_queries(picard_cands_dict):
 
   for q in tqdm(picard_cands_dict):
     q_db_id, q_tbl_indices, gold_sql = picard_cands_dict[q]
-    gold_sql_queries.append(f'{gold_sql}\t{q_db_id}')
+    gold_sql_queries.append(gold_sql})
 
     # input_data = tokenize(tokenizer, generate_string(q, q_db_id, q_tbl_indices, DB_TO_COLS))
     # _, sql_query = generate_single(model, tokenizer, input_data)
