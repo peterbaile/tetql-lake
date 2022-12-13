@@ -29,7 +29,7 @@ def load_picard_model(name="tscholak-3vnuv1vf"):
 #   return input_string, input_ids
 
 def tokenize(tokenizer, question):
-  return tokenizer(input_string, max_length=512, return_tensors="pt").input_ids
+  return tokenizer(question, max_length=512, return_tensors="pt").input_ids
 
 def generate_single(model, tokenizer, input_data: Tensor):
   input_data = input_data.to(model.device)
