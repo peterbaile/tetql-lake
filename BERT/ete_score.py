@@ -101,7 +101,7 @@ def evaluate(CANDS_PATH):
     q_tbl_idx = row['table_index']
 
     if q not in picard_cands_dict:
-      picard_cands_dict[q] = [q_db_id, [q_tbl_idx], gold_sql_dict[q]]
+      picard_cands_dict[q] = [q_db_id, gold_sql_dict[q], [q_tbl_idx]]
     else:
       picard_cands_dict[q][1].append(q_tbl_idx)
   

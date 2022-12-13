@@ -81,7 +81,7 @@ def generate_queries(picard_cands_dict):
     DB_TO_COLS[tbl] = f'{tbl_orig_name} : {cols}'
 
   for q in tqdm(picard_cands_dict):
-    q_db_id, q_tbl_indices, gold_sql = q
+    q_db_id, gold_sql, q_tbl_indices = q
     gold_sql_queries.append(gold_sql)
 
     input_data = tokenize(tokenizer, generate_string(q, q_db_id, q_tbl_indices, DB_TO_COLS))
