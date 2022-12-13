@@ -185,7 +185,7 @@ if __name__ == '__main__':
       num_tables = 0
       for pos, max_i in enumerate(max_indices):
         if args.rerank:
-          cand_db_id = dev_df.iloc[i * dev_batch_size + max_i]['db_id']
+          cand_db_id = dev_df.iloc[batch_idx * dev_batch_size + max_i]['db_id']
           if cand_db_id not in db_count:
             db_count[cand_db_id] = [pos, [max_i]]
           else:
