@@ -82,7 +82,7 @@ def collate_fn(batch):
 
 device = 'cuda'
 
-def evaluate(CANDS_PATH):
+def evaluate(dev_filename, CANDS_PATH):
   cands_dev_df = pd.read_csv(CANDS_PATH)
 
   with open('../spider_data/dev_new.json', 'r') as f:
@@ -111,10 +111,10 @@ def evaluate(CANDS_PATH):
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
-  with open('./data/eval/pred.txt', 'w') as f:
+  with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
     f.write('\n'.join(pred_queries))
   
-  with open('./data/eval/gold.txt', 'w') as f:
+  with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
     f.write('\n'.join(gold_queries))
 
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
   CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
 
   if exists(CANDS_PATH):
-    evaluate(CANDS_PATH)
+    evaluate(args.devfile, CANDS_PATH)
     sys.exit(0)
 
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
