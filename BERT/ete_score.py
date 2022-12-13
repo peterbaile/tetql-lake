@@ -96,6 +96,7 @@ def evaluate(CANDS_PATH):
   picard_cands_dict = {}
 
   for row in cands_dev_df:
+    print(row['text'])
     q = row['text'].split(' [SEP] ')
     print(q)
     q = q[0]
