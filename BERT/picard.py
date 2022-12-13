@@ -3,6 +3,7 @@ from typing import Tuple, List
 import torch
 from torch import Tensor
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from tqdm import tqdm
 
 
 def load_picard_model(name="tscholak-3vnuv1vf"):
@@ -46,6 +47,7 @@ def generate_string(q, db_id, tables, DB_TO_COLS):
 
 def generate_queries(picard_cands_dict):
   device = 'cuda'
+  print(f'loading model')
   tokenizer, model = load_picard_model()
   model = model.to(device)
 
@@ -75,7 +77,7 @@ def generate_queries(picard_cands_dict):
     cols = ', '.join(DB_TO_COLS[tbl])
     DB_TO_COLS[tbl] = f'{tbl_orig_name} : {cols}'
 
-  for q in picard_cands_dict:
+  for q in tqdm(picard_cands_dict):
     q_db_id, q_tbl_indices, gold_sql = q
     gold_sql_queries.append(gold_sql)
 
