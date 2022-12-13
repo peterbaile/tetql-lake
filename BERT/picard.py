@@ -59,9 +59,11 @@ def generate_queries(picard_cands_dict):
     db_data = json.load(f)
 
   DB_TO_COLS = {}
+  db_data_dict = {}
   
   for db in db_data:
     db_id = db['db_id']
+    db_data_dict[db_id] = db
 
     for col in db['column_names_original']:
       if col[0] == -1:
@@ -74,7 +76,7 @@ def generate_queries(picard_cands_dict):
     
   for tbl in DB_TO_COLS:
     db_id, tbl_idx = tbl
-    tbl_orig_name = db_data[db_id]['table_names_original'][tbl_idx]
+    tbl_orig_name = db_data_dict[db_id]['table_names_original'][tbl_idx]
     cols = ', '.join(DB_TO_COLS[tbl])
     DB_TO_COLS[tbl] = f'{tbl_orig_name} : {cols}'
 
