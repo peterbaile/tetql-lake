@@ -96,7 +96,7 @@ def evaluate(CANDS_PATH):
   picard_cands_dict = {}
 
   for row in cands_dev_df:
-    q = row['text'].split(['[SEP]'])[0][:-1]
+    q = row['text'].split(' [SEP] ')[0]
     q_db_id = row['db_id']
     q_tbl_idx = row['table_index']
 
