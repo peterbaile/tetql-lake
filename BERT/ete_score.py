@@ -111,12 +111,14 @@ def evaluate(dev_filename, CANDS_PATH):
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
-  with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
-    f.write('\n'.join(pred_queries))
+  # with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
+  #   f.write('\n'.join(pred_queries))
   
   with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
     f.write('\n'.join(gold_queries))
 
+def evaluate_all_tables():
+  return
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
