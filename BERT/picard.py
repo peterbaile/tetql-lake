@@ -5,7 +5,7 @@ from torch import Tensor
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
-def load_picard_model(name="tscholak/cxmefzzi"):
+def load_picard_model(name="tscholak-3vnuv1vf"):
   tokenizer = AutoTokenizer.from_pretrained(name)
   model = AutoModelForSeq2SeqLM.from_pretrained(name)
   return tokenizer, model

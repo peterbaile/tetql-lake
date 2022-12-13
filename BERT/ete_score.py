@@ -133,9 +133,9 @@ if __name__ == '__main__':
 
   CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
 
-  # if exists(CANDS_PATH):
-  #   evaluate(CANDS_PATH)
-  #   sys.exit(0)
+  if exists(CANDS_PATH):
+    evaluate(CANDS_PATH)
+    sys.exit(0)
 
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
   print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
