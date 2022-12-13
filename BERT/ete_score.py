@@ -235,17 +235,13 @@ if __name__ == '__main__':
   print(f'precision: {100 * precision_score(dev_Y, total_output):.3f}%')
   print(f'recall: {100 * recall_score(dev_Y, total_output):.3f}%')
   print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}%')
-
-  print(total_max_indices)
   
-  # cands_dev_df = dev_df.iloc[total_max_indices]
-  # cands_dev_df.to_csv(CANDS_PATH, index=False)
+  cands_dev_df = dev_df.iloc[total_max_indices]
+  cands_dev_df.to_csv(CANDS_PATH, index=False)
 
-  
-  
-  # num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
-  # print(f'expected size {num_q}, actual size {cands_dev_df.shape[0]}')
+  num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
+  print(f'expected size {num_q}, actual size {cands_dev_df.shape[0]}')
 
-  # assert(num_q == cands_dev_df.shape[0])
+  assert(num_q == cands_dev_df.shape[0])
 
-  # print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
+  print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
