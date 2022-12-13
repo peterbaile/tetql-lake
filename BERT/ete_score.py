@@ -97,7 +97,7 @@ def evaluate(dev_filename, CANDS_PATH):
 
   for _, row in cands_dev_df.iterrows():
     q = row['text'].split(' [SEP] ')[0]
-    q_db_id = row['db_id']
+    q_db_id = row['db_id'].lower()
     q_tbl_idx = row['table_index']
 
     if q not in picard_cands_dict:

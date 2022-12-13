@@ -58,7 +58,7 @@ def generate_queries(picard_cands_dict):
   db_data_dict = {}
   
   for db in db_data:
-    db_id = db['db_id']
+    db_id = db['db_id'].lower()
     db_data_dict[db_id] = db
 
     for col in db['column_names_original']:
