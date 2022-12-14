@@ -99,7 +99,7 @@ def evaluate_em(devfile):
     if num_matching_tables > 1:
       continue
     
-    matching_tables = cands_data[q_idx][:topk]
+    matching_tables = cands_data[q_idx][:top_k]
 
     q_db_id = set()
     q_matching_table_indices = []
