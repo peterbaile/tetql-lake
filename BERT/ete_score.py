@@ -89,12 +89,12 @@ def evaluate_em(devfile):
   with open(f'./data/dev/em/{devfile}_cands') as f:
     cands_data = json.load(f)
   
-  q_idx = 0
+  # q_idx = 0
   top_k = 1
 
   picard_cands_dict = {}
 
-  for q in q_data:
+  for q_idx, q in enumerate(q_data):
     num_matching_tables = len(q['table_labels'])
     if num_matching_tables > 1:
       continue
@@ -113,7 +113,7 @@ def evaluate_em(devfile):
 
     picard_cands_dict[q['question']] = [q_db_id, q_matching_table_indices,f"{q['query']}\t{q['db_id']}"]
 
-    q_idx += 1
+    # q_idx += 1
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
