@@ -82,6 +82,28 @@ def collate_fn(batch):
 
 device = 'cuda'
 
+def evaluate_picard(dev_filename):
+  with open('../spider_data/dev_new.json', 'r') as f:
+    q_data = json.load(f)
+  
+  picard_cands_dict = {}
+
+  for q in q_data:
+    num_tables = len(db['table_names'])
+
+    if num_tables == 1:
+      continue
+
+    picard_cands_dict[q] = [q['db_id'].lower(), [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
+
+  pred_queries, gold_queries = generate_queries(picard_cands_dict)
+
+  with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
+    f.write('\n'.join(pred_queries))
+  
+  with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
+    f.write('\n'.join(gold_queries))
+
 def evaluate(dev_filename, CANDS_PATH):
   cands_dev_df = pd.read_csv(CANDS_PATH)
 
@@ -111,8 +133,8 @@ def evaluate(dev_filename, CANDS_PATH):
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
-  # with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
-  #   f.write('\n'.join(pred_queries))
+  with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
+    f.write('\n'.join(pred_queries))
   
   with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
     f.write('\n'.join(gold_queries))
@@ -247,3 +269,6 @@ if __name__ == '__main__':
   assert(num_q == cands_dev_df.shape[0])
 
   print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
+
+if __name__ == '__main__':
+  evaluate_picard('dev_picard_join')
