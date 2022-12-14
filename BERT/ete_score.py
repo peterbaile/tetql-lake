@@ -86,15 +86,24 @@ def evaluate_picard(dev_filename):
   with open('../spider_data/dev_new.json', 'r') as f:
     q_data = json.load(f)
   
+  with open('../spider_data/tables.json') as f:
+    db_data = json.load(f)
+  
+  DB_NUM_TABLES = {}
+
+  for db in db_data:
+    DB_NUM_TABLES[db['db_id'].lower()] = len(db['table_names'])
+  
   picard_cands_dict = {}
 
   for q in q_data:
-    num_tables = len(db['table_names'])
+    q_db_id = q['db_id'].lower()
+    num_tables = DB_NUM_TABLES[q_db_id]
 
     if num_tables == 1:
       continue
 
-    picard_cands_dict[q] = [q['db_id'].lower(), [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
+    picard_cands_dict[q] = [q_db_id, [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
