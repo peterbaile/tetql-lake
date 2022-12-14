@@ -103,7 +103,7 @@ def evaluate_picard(dev_filename):
     if num_tables == 1:
       continue
 
-    picard_cands_dict[q] = [q_db_id, [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
+    picard_cands_dict[q['query']] = [q_db_id, [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
