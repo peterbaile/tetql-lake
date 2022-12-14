@@ -86,7 +86,7 @@ def evaluate_em(devfile):
   with open('../spider_data/dev_new.json', 'r') as f:
     q_data = json.load(f)
   
-  with open(f'./data/dev/em/{devfile}_cands') as f:
+  with open(f'./data/dev/em/{devfile}_cands.json') as f:
     cands_data = json.load(f)
   
   # q_idx = 0
