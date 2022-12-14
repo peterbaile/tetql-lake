@@ -142,7 +142,7 @@ def evaluate_picard(dev_filename):
     num_tables = DB_NUM_TABLES[q_db_id]
     num_matching_tables = len(q['table_labels'])
 
-    if num_matching_tables != 1:
+    if num_matching_tables != 2:
       continue
 
     picard_cands_dict[q['question']] = [q_db_id, [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
@@ -317,7 +317,8 @@ if __name__ == '__main__':
   
   # generate_model_cands(args, CANDS_PATH)
 
-  evaluate_em(args.devfile)
+  # evaluate_em(args.devfile)
+  evaluate_picard('dev_picard_join_2')
 
 # if __name__ == '__main__':
 #   evaluate_picard('dev_picard_single')
