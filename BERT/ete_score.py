@@ -92,14 +92,12 @@ def evaluate_em(devfile):
   # q_idx = 0
   top_k = 1
 
-  picard_cands_dict = {}
+  picard_cands_dicts = [{}, {}, {}, {}]
 
   for q_idx, q in enumerate(q_data):
     num_matching_tables = len(q['table_labels'])
-    if num_matching_tables > 1:
-      continue
     
-    matching_tables = cands_data[q_idx][:top_k]
+    matching_tables = cands_data[q_idx][:num_matching_tables]
 
     q_db_id = set()
     q_matching_table_indices = []
@@ -111,17 +109,27 @@ def evaluate_em(devfile):
     assert len(q_db_id) == 1
     q_db_id = list(q_db_id)[0]
 
-    picard_cands_dict[q['question']] = [q_db_id, q_matching_table_indices,f"{q['query']}\t{q['db_id']}"]
+    picard_cands_dicts[num_matching_tables - 1][q['question']] = [q_db_id, q_matching_table_indices,f"{q['query']}\t{q['db_id']}"]
 
     # q_idx += 1
 
-  pred_queries, gold_queries = generate_queries(picard_cands_dict)
+  for i, picard_cands_dict in enumerate(picard_cands_dicts):
+    pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
-  with open(f'./data/eval/{devfile}_pred.txt', 'w') as f:
-    f.write('\n'.join(pred_queries))
-  
-  with open(f'./data/eval/{devfile}_gold.txt', 'w') as f:
-    f.write('\n'.join(gold_queries))
+    if i == 0:
+      suffix = 'single'
+    elif i == 1:
+      suffix = 'join_2'
+    elif i == 2:
+      suffix = 'join_3'
+    elif i == 4:
+      suffix = 'join_4'
+
+    with open(f'./data/eval/{devfile}_{suffix}_pred.txt', 'w') as f:
+      f.write('\n'.join(pred_queries))
+    
+    with open(f'./data/eval/{devfile}_{suffix}_gold.txt', 'w') as f:
+      f.write('\n'.join(gold_queries))
 
 def evaluate_picard(dev_filename):
   with open('../spider_data/dev_new.json', 'r') as f:
