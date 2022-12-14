@@ -105,7 +105,7 @@ def evaluate_em(devfile):
     q_matching_table_indices = []
 
     for matching_table in matching_tables:
-      q_db_id.append(matching_table[0])
+      q_db_id.add(matching_table[0])
       q_matching_table_indices.append(matching_table[1])
     
     assert len(q_db_id) == 1
