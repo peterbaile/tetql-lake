@@ -99,8 +99,9 @@ def evaluate_picard(dev_filename):
   for q in q_data:
     q_db_id = q['db_id'].lower()
     num_tables = DB_NUM_TABLES[q_db_id]
+    num_matching_tables = len(q['table_labels'])
 
-    if num_tables == 1:
+    if num_matching_tables == 1:
       continue
 
     picard_cands_dict[q['query']] = [q_db_id, [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
