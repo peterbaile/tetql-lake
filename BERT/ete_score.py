@@ -117,10 +117,10 @@ def evaluate_em(devfile):
 
   pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
-  with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
+  with open(f'./data/eval/{devfile}_pred.txt', 'w') as f:
     f.write('\n'.join(pred_queries))
   
-  with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
+  with open(f'./data/eval/{devfile}_gold.txt', 'w') as f:
     f.write('\n'.join(gold_queries))
 
 def evaluate_picard(dev_filename):
