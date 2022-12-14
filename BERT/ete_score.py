@@ -82,6 +82,47 @@ def collate_fn(batch):
 
 device = 'cuda'
 
+def evaluate_em(devfile):
+  with open('../spider_data/dev_new.json', 'r') as f:
+    q_data = json.load(f)
+  
+  with open(f'./data/dev/em/{devfile}_cands') as f:
+    cands_data = json.load(f)
+  
+  q_idx = 0
+  top_k = 1
+
+  picard_cands_dict = {}
+
+  for q in q_data:
+    num_matching_tables = len(q['table_labels'])
+    if num_matching_tables > 1:
+      continue
+    
+    matching_tables = cands_data[q_idx][:topk]
+
+    q_db_id = set()
+    q_matching_table_indices = []
+
+    for matching_table in matching_tables:
+      q_db_id.append(matching_table[0])
+      q_matching_table_indices.append(matching_table[1])
+    
+    assert len(q_db_id) == 1
+    q_db_id = list(q_db_id)[0]
+
+    picards_cands_dict[q['question']] = [q_db_id, q_matching_table_indices,f"{q['query']}\t{q['db_id']}"]
+
+    q_idx += 1
+
+  pred_queries, gold_queries = generate_queries(picard_cands_dict)
+
+  with open(f'./data/eval/{dev_filename}_pred.txt', 'w') as f:
+    f.write('\n'.join(pred_queries))
+  
+  with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
+    f.write('\n'.join(gold_queries))
+
 def evaluate_picard(dev_filename):
   with open('../spider_data/dev_new.json', 'r') as f:
     q_data = json.load(f)
@@ -145,25 +186,7 @@ def evaluate(dev_filename, CANDS_PATH):
   with open(f'./data/eval/{dev_filename}_gold.txt', 'w') as f:
     f.write('\n'.join(gold_queries))
 
-if __name__ == '__main__':
-  parser = argparse.ArgumentParser()
-
-  parser.add_argument('--path', type=str)
-  parser.add_argument('--devfile', type=str)
-  parser.add_argument('--addnegative', type=bool, default=False)
-  parser.add_argument('--join', type=bool, default=False)
-  parser.add_argument('--topk', type=int)
-  parser.add_argument('--rerank', action='store_true')
-  parser.add_argument('--topnum', type=int, default=-1)
-
-  args = parser.parse_args()
-
-  CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
-
-  if exists(CANDS_PATH):
-    evaluate(args.devfile, CANDS_PATH)
-    sys.exit(0)
-
+def generate_model_cands(args, CANDS_PATH):
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
   print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
 
@@ -272,6 +295,29 @@ if __name__ == '__main__':
   assert(num_q == cands_dev_df.shape[0])
 
   print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument('--path', type=str)
+  parser.add_argument('--devfile', type=str)
+  parser.add_argument('--addnegative', type=bool, default=False)
+  parser.add_argument('--join', type=bool, default=False)
+  parser.add_argument('--topk', type=int)
+  parser.add_argument('--rerank', action='store_true')
+  parser.add_argument('--topnum', type=int, default=-1)
+
+  args = parser.parse_args()
+
+  # CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
+
+  # if exists(CANDS_PATH):
+  #   evaluate(args.devfile, CANDS_PATH)
+  #   sys.exit(0)
+  
+  # generate_model_cands(args, CANDS_PATH)
+
+  evaluate_em(args.devfile)
 
 # if __name__ == '__main__':
 #   evaluate_picard('dev_picard_single')
