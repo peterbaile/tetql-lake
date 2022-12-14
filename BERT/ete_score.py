@@ -317,8 +317,8 @@ if __name__ == '__main__':
   
   # generate_model_cands(args, CANDS_PATH)
 
-  # evaluate_em(args.devfile)
-  evaluate_picard('dev_picard_join_4')
+  evaluate_em(args.devfile)
+  # evaluate_picard('dev_picard_join_4')
 
 # if __name__ == '__main__':
 #   evaluate_picard('dev_picard_single')
