@@ -101,7 +101,7 @@ def evaluate_picard(dev_filename):
     num_tables = DB_NUM_TABLES[q_db_id]
     num_matching_tables = len(q['table_labels'])
 
-    if num_matching_tables == 1:
+    if num_matching_tables != 1:
       continue
 
     picard_cands_dict[q['question']] = [q_db_id, [i for i in range(num_tables)], f"{q['query']}\t{q['db_id']}"]
@@ -274,4 +274,4 @@ def evaluate(dev_filename, CANDS_PATH):
 #   print(f'#questions is {num_q}, cands shape {cands_dev_df.shape}')
 
 if __name__ == '__main__':
-  evaluate_picard('dev_picard_join')
+  evaluate_picard('dev_picard_single')
