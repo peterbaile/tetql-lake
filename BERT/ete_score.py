@@ -114,6 +114,9 @@ def evaluate_em(devfile):
     # q_idx += 1
 
   for i, picard_cands_dict in enumerate(picard_cands_dicts):
+    if i == 0 or i == 1:
+      continue
+
     pred_queries, gold_queries = generate_queries(picard_cands_dict)
 
     if i == 0:
@@ -122,7 +125,7 @@ def evaluate_em(devfile):
       suffix = 'join_2'
     elif i == 2:
       suffix = 'join_3'
-    elif i == 4:
+    elif i == 3:
       suffix = 'join_4'
 
     with open(f'./data/eval/{devfile}_{suffix}_pred.txt', 'w') as f:
