@@ -97,7 +97,7 @@ def evaluate_llm(args):
   MODEL_PATH = suffix(f'./data/{args.path}/{MODEL_TYPE}-ranking', args, '-', '.pt')
   print(f'source path: {args.path}, {MODEL_TYPE}, {MODEL_PATH}, add negative: {args.addnegative}')
 
-  print(f'dev file: {args.devfile}, topk: {args.topk}, re-rank: {args.rerank}, top #cands: {args.topnum}, strategy: {args.strategy}')
+  print(f'dev file: {args.devfile}')
   model = torch.load(MODEL_PATH)
   dev_batch_size = 81 # this has to be the same as the number of candidates picked (81 no join, 100 idf)
 
