@@ -84,7 +84,7 @@ def get_topk(strategy, num_matching_tables):
   if strategy == 'A':
     dynamic_topk = num_matching_tables
   elif strategy == 'B':
-    if num_matching_tables == 1
+    if num_matching_tables == 1:
       dynamic_topk = 1
     else:
       dynamic_topk = 4
