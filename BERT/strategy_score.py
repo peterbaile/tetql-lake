@@ -108,7 +108,6 @@ def evaluate_llm(args):
   dev_dataloader = data.DataLoader(dev_dataset, batch_size = dev_batch_size)
 
   total_output_ls = [[], [], []] # 3 strategies
-  total_max_indices = None
 
   model.eval()
   with torch.no_grad():
@@ -132,13 +131,6 @@ def evaluate_llm(args):
           output[max_i] = 1
 
         total_output_ls[s_pos] += output
-
-      # if total_output is None:
-      #   total_output = output
-      #   # total_output_prob = (raw_output.max()).cpu()
-      # else:
-      #   total_output += output
-      #   # total_output_prob = torch.vstack((total_output_prob, (raw_output.max()).cpu()))
   
   for total_output in total_output_ls:
     print(f'accuracy: {100 * accuracy_score(dev_Y, total_output):.3f}%')
@@ -152,11 +144,11 @@ if __name__ == '__main__':
 
   parser.add_argument('--path', type=str)
   parser.add_argument('--devfile', type=str)
-  parser.add_argument('--addnegative', type=bool, default=False)
-  parser.add_argument('--join', type=bool, default=False)
-  parser.add_argument('--topk', type=int)
-  parser.add_argument('--rerank', action='store_true')
-  parser.add_argument('--topnum', type=int, default=-1)
+  # parser.add_argument('--addnegative', type=bool, default=False)
+  # parser.add_argument('--join', type=bool, default=False)
+  # parser.add_argument('--topk', type=int)
+  # parser.add_argument('--rerank', action='store_true')
+  # parser.add_argument('--topnum', type=int, default=-1)
   # parser.add_argument('--strategy', type='str', default='A')
 
   args = parser.parse_args()
