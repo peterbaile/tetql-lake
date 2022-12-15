@@ -329,7 +329,7 @@ def generate_model_cands(args, CANDS_PATH):
   print(f'f1: {100 * f1_score(dev_Y, total_output):.3f}%')
   
   cands_dev_df = dev_df.iloc[total_max_indices]
-  cands_dev_df.to_csv(CANDS_PATH, index=False)
+  # cands_dev_df.to_csv(CANDS_PATH, index=False)
 
   num_q = int(args.topk * dev_df.shape[0]/dev_batch_size)
   print(f'expected size {num_q}, actual size {cands_dev_df.shape[0]}')
@@ -357,11 +357,8 @@ if __name__ == '__main__':
   #   evaluate(args.devfile, CANDS_PATH)
   #   sys.exit(0)
   
-  # generate_model_cands(args, CANDS_PATH)
+  generate_model_cands(args, CANDS_PATH)
 
   # evaluate_em(args.devfile)
   # evaluate_picard('dev_picard_join_4')
-  evaluate_picard_OM()
-
-# if __name__ == '__main__':
-#   evaluate_picard('dev_picard_single')
+  # evaluate_picard_OM()
