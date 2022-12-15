@@ -131,6 +131,40 @@ def evaluate_em(devfile):
     with open(f'./data/eval/{devfile}_{suffix}_gold.txt', 'w') as f:
       f.write('\n'.join(gold_queries))
 
+# evaluate picard performance on only matching tables (instead of using all tables in a relevant DB)
+def evaluate_picard_OM():
+  with open('../spider_data/dev_new.json', 'r') as f:
+    q_data = json.load(f)
+  
+  with open('../spider_data/tables.json') as f:
+    db_data = json.load(f)
+  
+  picard_cands_dicts = [{}, {}, {}, {}]
+
+  for q_idx, q in enumerate(q_data):
+    q_db_id = q['db_id'].lower()
+    num_matching_tables = len(q['table_labels'])
+
+    picard_cands_dicts[num_matching_tables - 1][q['question']] = [q_db_id, q['table_labels'], f"{q['query']}\t{q['db_id']}"]
+
+  for i, picard_cands_dict in enumerate(picard_cands_dicts):
+    pred_queries, gold_queries = generate_queries(picard_cands_dict)
+
+    if i == 0:
+      suffix = 'single'
+    elif i == 1:
+      suffix = 'join_2'
+    elif i == 2:
+      suffix = 'join_3'
+    elif i == 3:
+      suffix = 'join_4'
+
+    with open(f'./data/eval/dev_picard_OM_{suffix}_pred.txt', 'w') as f:
+      f.write('\n'.join(pred_queries))
+    
+    with open(f'./data/eval/dev_picard_OM_{suffix}_gold.txt', 'w') as f:
+      f.write('\n'.join(gold_queries))
+
 def evaluate_picard(dev_filename):
   with open('../spider_data/dev_new.json', 'r') as f:
     q_data = json.load(f)
@@ -325,8 +359,9 @@ if __name__ == '__main__':
   
   # generate_model_cands(args, CANDS_PATH)
 
-  evaluate_em(args.devfile)
+  # evaluate_em(args.devfile)
   # evaluate_picard('dev_picard_join_4')
+  evaluate_picard_OM()
 
 # if __name__ == '__main__':
 #   evaluate_picard('dev_picard_single')
