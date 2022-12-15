@@ -351,7 +351,7 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
-  # CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
+  CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
 
   # if exists(CANDS_PATH):
   #   evaluate(args.devfile, CANDS_PATH)
