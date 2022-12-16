@@ -109,7 +109,7 @@ def evaluate_em(devfile):
     assert len(q_db_id) == 1
     q_db_id = list(q_db_id)[0]
 
-    picard_cands_dicts[num_matching_tables - 1][q['question']] = [q_db_id, q_matching_table_indices,f"{q['query']}\t{q['db_id']}"]
+    picard_cands_dicts[num_matching_tables - 1][q['question']] = [q_db_id, q_matching_table_indices, f"{q['query']}\t{q['db_id']}"]
 
     # q_idx += 1
 
@@ -351,14 +351,14 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
-  CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
+  # CANDS_PATH = f'./data/dev/{args.devfile}_ranking_cands.csv'
 
   # if exists(CANDS_PATH):
   #   evaluate(args.devfile, CANDS_PATH)
   #   sys.exit(0)
   
-  generate_model_cands(args, CANDS_PATH)
+  # generate_model_cands(args, CANDS_PATH)
 
-  # evaluate_em(args.devfile)
+  evaluate_em(args.devfile)
   # evaluate_picard('dev_picard_join_4')
   # evaluate_picard_OM()
