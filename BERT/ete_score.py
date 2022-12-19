@@ -125,11 +125,11 @@ def evaluate_em(devfile):
     elif i == 3:
       suffix = 'join_4'
 
-    with open(f'./data/eval/{devfile}_{suffix}_pred.txt', 'w') as f:
-      f.write('\n'.join(pred_queries))
+    # with open(f'./data/eval/{devfile}_{suffix}_pred.txt', 'w') as f:
+    #   f.write('\n'.join(pred_queries))
     
-    with open(f'./data/eval/{devfile}_{suffix}_gold.txt', 'w') as f:
-      f.write('\n'.join(gold_queries))
+    # with open(f'./data/eval/{devfile}_{suffix}_gold.txt', 'w') as f:
+    #   f.write('\n'.join(gold_queries))
 
 # evaluate picard performance on only matching tables (instead of using all tables in a relevant DB)
 def evaluate_picard_OM():
