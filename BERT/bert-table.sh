@@ -12,4 +12,4 @@ module load anaconda/2021b
 
 # python ete_score.py --path train_spider --devfile dev_join_2 --topk 2 --rerank --topnum 15
 
-python ete_score.py --devfile dev_em
+python ete_score.py --devfile dev_idf
